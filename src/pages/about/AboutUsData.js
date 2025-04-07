@@ -4,53 +4,32 @@ import {
   Typography,
   Paper,
   Grid,
-  Avatar,
-  Divider,
   Chip,
-  Link,
   Card,
   CardContent,
+  TextField,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  Radio,
+  FormControlLabel,
+  Snackbar,
+  Alert,
+  IconButton,
+  Link,
+  Button,
+  Rating,
+  Avatar,
+  Divider,
 } from "@mui/material";
+import InfoIcon from "@mui/icons-material/Info";
 import EmailIcon from "@mui/icons-material/Email";
-import GitHubIcon from "@mui/icons-material/GitHub";
-import LinkedInIcon from "@mui/icons-material/LinkedIn";
-import SchoolIcon from "@mui/icons-material/School";
-import WorkIcon from "@mui/icons-material/Work";
-import SmartToyIcon from "@mui/icons-material/SmartToy";
-
-// Sample team data - replace with your actual team information
-const teamMembers = [
-  {
-    id: 1,
-    name: "Alex Johnson",
-    role: "Project Lead",
-    bio: "Computer Science graduate specializing in web applications and user experience design.",
-    imageUrl: "/api/placeholder/150/150", // Replace with actual image
-    email: "alex.johnson@example.com",
-    github: "https://github.com/alexj",
-    linkedin: "https://linkedin.com/in/alexj",
-  },
-  {
-    id: 2,
-    name: "Jamie Smith",
-    role: "UI/UX Designer",
-    bio: "Human-Computer Interaction specialist with a background in graphic design and psychology.",
-    imageUrl: "/api/placeholder/150/150", // Replace with actual image
-    email: "jamie.smith@example.com",
-    github: "https://github.com/jamies",
-    linkedin: "https://linkedin.com/in/jamies",
-  },
-  {
-    id: 3,
-    name: "Taylor Wong",
-    role: "Full Stack Developer",
-    bio: "Software engineer with experience in React, Node.js, and cloud infrastructure.",
-    imageUrl: "/api/placeholder/150/150", // Replace with actual image
-    email: "taylor.wong@example.com",
-    github: "https://github.com/taylorw",
-    linkedin: "https://linkedin.com/in/taylorw",
-  },
-];
+import CallIcon from "@mui/icons-material/Call";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import SendIcon from "@mui/icons-material/Send";
+import StarIcon from "@mui/icons-material/Star";
+import FeedbackIcon from "@mui/icons-material/Feedback";
+import ContactSupportIcon from "@mui/icons-material/ContactSupport";
 
 // Project information
 const projectInfo = {
@@ -73,6 +52,70 @@ const projectInfo = {
 };
 
 function AboutUsData(props) {
+  const [rating, setRating] = React.useState(0);
+  const [hover, setHover] = React.useState(-1);
+  const [feedbackType, setFeedbackType] = React.useState("general");
+  const [feedbackText, setFeedbackText] = React.useState("");
+  const [contactName, setContactName] = React.useState("");
+  const [contactEmail, setContactEmail] = React.useState("");
+  const [contactSubject, setContactSubject] = React.useState("");
+  const [contactMessage, setContactMessage] = React.useState("");
+  const [openSnackbar, setOpenSnackbar] = React.useState(false);
+  const [snackbarMessage, setSnackbarMessage] = React.useState("");
+
+  const handleFeedbackSubmit = (event) => {
+    event.preventDefault();
+    console.log({
+      rating,
+      feedbackType,
+      feedbackText,
+    });
+
+    setSnackbarMessage("Thank you for your feedback!");
+    setOpenSnackbar(true);
+
+    // Reset form
+    setRating(0);
+    setFeedbackType("general");
+    setFeedbackText("");
+  };
+
+  const handleContactSubmit = (event) => {
+    event.preventDefault();
+    console.log({
+      name: contactName,
+      email: contactEmail,
+      subject: contactSubject,
+      message: contactMessage,
+    });
+
+    setSnackbarMessage(
+      "Your message has been sent. We'll get back to you soon!"
+    );
+    setOpenSnackbar(true);
+
+    // Reset form
+    setContactName("");
+    setContactEmail("");
+    setContactSubject("");
+    setContactMessage("");
+  };
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackbar(false);
+  };
+
+  const labels = {
+    1: "Useless",
+    2: "Poor",
+    3: "Acceptable",
+    4: "Good",
+    5: "Excellent",
+  };
+
   return (
     <Box
       component="main"
@@ -87,344 +130,363 @@ function AboutUsData(props) {
       }}
     >
       <Box sx={{ pt: 4, pb: 2 }}>
-        <Typography
+        {/* <Typography
           variant="h4"
           component="h1"
           gutterBottom
           sx={{ fontSize: "1.8rem" }}
         >
-          About Us
+          About RetailHub
         </Typography>
         <Typography variant="body1" color="text.secondary" paragraph>
-          Learn about our team and the resources portal project.
-        </Typography>
+          Learn about our project, provide feedback, or get in touch with our
+          team.
+        </Typography> */}
       </Box>
 
-      {/* Project Overview Section */}
-      <Paper
-        elevation={0}
-        sx={{
-          p: 3,
-          mb: 4,
-          borderRadius: "8px",
-          backgroundColor: "white",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-        }}
-      >
-        <Typography
-          variant="h5"
-          component="h2"
-          gutterBottom
-          sx={{ fontSize: "1.4rem", fontWeight: 600, mb: 2 }}
-        >
-          Project Overview
-        </Typography>
-
-        <Typography variant="body1" paragraph sx={{ mb: 2 }}>
-          {projectInfo.description}
-        </Typography>
-
-        <Box sx={{ mb: 3 }}>
-          <Typography
-            variant="subtitle1"
-            sx={{ fontWeight: 600, fontSize: "0.95rem", mb: 1 }}
+      <Grid container spacing={3}>
+        {/* About Us Card */}
+        <Grid item xs={12} md={4}>
+          <Card
+            sx={{
+              height: "100%",
+              borderRadius: "8px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+            }}
           >
-            Key Features
-          </Typography>
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.8 }}>
-            {projectInfo.highlights.map((highlight, index) => (
-              <Chip
-                key={index}
-                label={highlight}
-                variant="outlined"
-                size="small"
-                sx={{
-                  backgroundColor: "#f5f5f5",
-                  borderColor: "transparent",
-                  borderRadius: "6px",
-                }}
-              />
-            ))}
-          </Box>
-        </Box>
+            <CardContent sx={{ p: 3 }}>
+              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                <Avatar sx={{ bgcolor: "#e3f2fd", mr: 1.5 }}>
+                  <InfoIcon sx={{ color: "#1976d2" }} />
+                </Avatar>
+                <Typography
+                  variant="h5"
+                  component="h2"
+                  sx={{ fontSize: "1.4rem", fontWeight: 600 }}
+                >
+                  About Us
+                </Typography>
+              </Box>
 
-        <Box>
-          <Typography
-            variant="subtitle1"
-            sx={{ fontWeight: 600, fontSize: "0.95rem", mb: 1 }}
+              <Typography variant="body1" paragraph sx={{ mb: 2 }}>
+                {projectInfo.description}
+              </Typography>
+
+              <Box sx={{ mb: 3 }}>
+                <Typography
+                  variant="subtitle1"
+                  sx={{ fontWeight: 600, fontSize: "0.95rem", mb: 1 }}
+                >
+                  Key Features
+                </Typography>
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.8 }}>
+                  {projectInfo.highlights.map((highlight, index) => (
+                    <Chip
+                      key={index}
+                      label={highlight}
+                      variant="outlined"
+                      size="small"
+                      sx={{
+                        backgroundColor: "#f5f5f5",
+                        borderColor: "transparent",
+                        borderRadius: "6px",
+                        mb: 0.8,
+                      }}
+                    />
+                  ))}
+                </Box>
+              </Box>
+
+              <Box>
+                <Typography
+                  variant="subtitle1"
+                  sx={{ fontWeight: 600, fontSize: "0.95rem", mb: 1 }}
+                >
+                  Technologies Used
+                </Typography>
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.8 }}>
+                  {projectInfo.technologies.map((tech, index) => (
+                    <Chip
+                      key={index}
+                      label={tech}
+                      size="small"
+                      sx={{
+                        backgroundColor: "#e3f2fd",
+                        color: "#1565c0",
+                        borderRadius: "6px",
+                        fontWeight: 500,
+                        mb: 0.8,
+                      }}
+                    />
+                  ))}
+                </Box>
+              </Box>
+
+              <Divider sx={{ my: 3 }} />
+
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                textAlign="center"
+              >
+                This project was developed for the Human-Computer Interaction
+                course CS-5340 at Northeastern University.
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Rate Us Card */}
+        <Grid item xs={12} md={4}>
+          <Card
+            sx={{
+              height: "100%",
+              borderRadius: "8px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+            }}
           >
-            Technologies Used
-          </Typography>
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.8 }}>
-            {projectInfo.technologies.map((tech, index) => (
-              <Chip
-                key={index}
-                label={tech}
-                size="small"
-                sx={{
-                  backgroundColor: "#e3f2fd",
-                  color: "#1565c0",
-                  borderRadius: "6px",
-                  fontWeight: 500,
-                }}
-              />
-            ))}
-          </Box>
-        </Box>
-      </Paper>
+            <CardContent sx={{ p: 3 }}>
+              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                <Avatar sx={{ bgcolor: "#fff8e1", mr: 1.5 }}>
+                  <FeedbackIcon sx={{ color: "#f57f17" }} />
+                </Avatar>
+                <Typography
+                  variant="h5"
+                  component="h2"
+                  sx={{ fontSize: "1.4rem", fontWeight: 600 }}
+                >
+                  Rate Us
+                </Typography>
+              </Box>
 
-      {/* Team Section */}
-      <Typography
-        variant="h5"
-        component="h2"
-        gutterBottom
-        sx={{
-          fontSize: "1.4rem",
-          fontWeight: 600,
-          mb: 3,
-          borderBottom: "2px solid #e0e0e0",
-          paddingBottom: "0.5rem",
-        }}
-      >
-        Our Team
-      </Typography>
+              <Typography variant="body1" paragraph>
+                We value your feedback! Let us know how we're doing and how we
+                can improve the RetailHub Resources portal.
+              </Typography>
 
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        {teamMembers.map((member) => (
-          <Grid item xs={12} md={4} key={member.id}>
-            <Card
-              sx={{
-                height: "100%",
-                borderRadius: "8px",
-                transition: "transform 0.2s",
-                "&:hover": {
-                  transform: "translateY(-4px)",
-                  boxShadow: "0 6px 12px rgba(0,0,0,0.1)",
-                },
-              }}
-            >
-              <CardContent sx={{ p: 3 }}>
+              <form onSubmit={handleFeedbackSubmit}>
                 <Box
                   sx={{
+                    mb: 3,
                     display: "flex",
                     flexDirection: "column",
-                    alignItems: "center",
-                    mb: 2,
+                    alignItems: "flex-start",
                   }}
                 >
-                  <Avatar
-                    src={member.imageUrl}
-                    alt={member.name}
-                    sx={{ width: 100, height: 100, mb: 2 }}
-                  />
                   <Typography
-                    variant="h6"
-                    gutterBottom
-                    sx={{ fontWeight: 600 }}
+                    component="legend"
+                    sx={{ mb: 1, fontWeight: 500 }}
                   >
-                    {member.name}
+                    How would you rate your experience?
                   </Typography>
-                  <Chip
-                    label={member.role}
-                    size="small"
-                    sx={{
-                      backgroundColor: "#f3e5f5",
-                      color: "#7b1fa2",
-                      fontWeight: 500,
-                      mb: 1,
-                    }}
-                  />
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <Rating
+                      name="hover-feedback"
+                      value={rating}
+                      precision={1}
+                      onChange={(event, newValue) => setRating(newValue)}
+                      onChangeActive={(event, newHover) => setHover(newHover)}
+                      emptyIcon={
+                        <StarIcon
+                          style={{ opacity: 0.55 }}
+                          fontSize="inherit"
+                        />
+                      }
+                      size="large"
+                      sx={{ mr: 2 }}
+                    />
+                    {rating !== null && (
+                      <Typography variant="body2" color="text.secondary">
+                        {labels[hover !== -1 ? hover : rating]}
+                      </Typography>
+                    )}
+                  </Box>
                 </Box>
 
+                <FormControl component="fieldset" sx={{ mb: 3, width: "100%" }}>
+                  <FormLabel component="legend" sx={{ fontWeight: 500 }}>
+                    What type of feedback?
+                  </FormLabel>
+                  <RadioGroup
+                    row
+                    aria-label="feedback-type"
+                    name="feedback-type"
+                    value={feedbackType}
+                    onChange={(e) => setFeedbackType(e.target.value)}
+                  >
+                    <FormControlLabel
+                      value="general"
+                      control={<Radio />}
+                      label="General"
+                    />
+                    <FormControlLabel
+                      value="feature"
+                      control={<Radio />}
+                      label="Feature Request"
+                    />
+                    <FormControlLabel
+                      value="bug"
+                      control={<Radio />}
+                      label="Bug Report"
+                    />
+                  </RadioGroup>
+                </FormControl>
+
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={4}
+                  label="Your Feedback"
+                  placeholder="Tell us what you think about our platform..."
+                  value={feedbackText}
+                  onChange={(e) => setFeedbackText(e.target.value)}
+                  sx={{ mb: 3 }}
+                />
+
+                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    disabled={!rating}
+                    endIcon={<SendIcon />}
+                    sx={{ borderRadius: "6px" }}
+                  >
+                    Submit Feedback
+                  </Button>
+                </Box>
+              </form>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Contact Us Card */}
+        <Grid item xs={12} md={4}>
+          <Card
+            sx={{
+              height: "100%",
+              borderRadius: "8px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+            }}
+          >
+            <CardContent sx={{ p: 3 }}>
+              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                <Avatar sx={{ bgcolor: "#e8f5e9", mr: 1.5 }}>
+                  <ContactSupportIcon sx={{ color: "#2e7d32" }} />
+                </Avatar>
                 <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ mb: 2, textAlign: "center" }}
+                  variant="h5"
+                  component="h2"
+                  sx={{ fontSize: "1.4rem", fontWeight: 600 }}
                 >
-                  {member.bio}
+                  Contact Us
                 </Typography>
+              </Box>
 
-                <Divider sx={{ mb: 2 }} />
+              <Typography variant="body1" paragraph>
+                Have questions or need assistance? Reach out to our team and
+                we'll get back to you soon.
+              </Typography>
 
-                <Box sx={{ display: "flex", justifyContent: "center", gap: 1 }}>
-                  <Link href={`mailto:${member.email}`} underline="none">
-                    <Avatar
-                      sx={{
-                        bgcolor: "#e3f2fd",
-                        color: "#1976d2",
-                        width: 36,
-                        height: 36,
-                      }}
-                    >
-                      <EmailIcon fontSize="small" />
-                    </Avatar>
-                  </Link>
-                  <Link href={member.github} target="_blank" underline="none">
-                    <Avatar
-                      sx={{
-                        bgcolor: "#e8f5e9",
-                        color: "#2e7d32",
-                        width: 36,
-                        height: 36,
-                      }}
-                    >
-                      <GitHubIcon fontSize="small" />
-                    </Avatar>
-                  </Link>
-                  <Link href={member.linkedin} target="_blank" underline="none">
-                    <Avatar
-                      sx={{
-                        bgcolor: "#e8eaf6",
-                        color: "#3f51b5",
-                        width: 36,
-                        height: 36,
-                      }}
-                    >
-                      <LinkedInIcon fontSize="small" />
-                    </Avatar>
-                  </Link>
+              <form onSubmit={handleContactSubmit}>
+                <TextField
+                  fullWidth
+                  required
+                  label="Your Name"
+                  value={contactName}
+                  onChange={(e) => setContactName(e.target.value)}
+                  size="small"
+                  sx={{ mb: 2 }}
+                />
+
+                <TextField
+                  fullWidth
+                  required
+                  label="Email Address"
+                  type="email"
+                  value={contactEmail}
+                  onChange={(e) => setContactEmail(e.target.value)}
+                  size="small"
+                  sx={{ mb: 2 }}
+                />
+
+                <TextField
+                  fullWidth
+                  required
+                  label="Subject"
+                  value={contactSubject}
+                  onChange={(e) => setContactSubject(e.target.value)}
+                  size="small"
+                  sx={{ mb: 2 }}
+                />
+
+                <TextField
+                  fullWidth
+                  required
+                  multiline
+                  rows={3}
+                  label="Message"
+                  value={contactMessage}
+                  onChange={(e) => setContactMessage(e.target.value)}
+                  sx={{ mb: 3 }}
+                />
+
+                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    disabled={!contactMessage}
+                    endIcon={<SendIcon />}
+                    sx={{ borderRadius: "6px" }}
+                  >
+                    Send Message
+                  </Button>
                 </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
+              </form>
+
+              <Divider sx={{ my: 3 }} />
+
+              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                <EmailIcon
+                  fontSize="small"
+                  sx={{ color: "primary.main", mr: 1 }}
+                />
+                <Typography variant="body2">
+                  <Link href="mailto:support@retailhub.edu" underline="hover">
+                    support@retailhub.edu
+                  </Link>
+                </Typography>
+              </Box>
+
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <LocationOnIcon
+                  fontSize="small"
+                  sx={{ color: "primary.main", mr: 1 }}
+                />
+                <Typography variant="body2">
+                  Northeastern University, 360 Huntington Ave, Boston, MA 02115
+                </Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
       </Grid>
 
-      {/* Project Timeline */}
-      <Paper
-        elevation={0}
-        sx={{
-          p: 3,
-          mb: 4,
-          borderRadius: "8px",
-          backgroundColor: "white",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-        }}
+      {/* Notification */}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
       >
-        <Typography
-          variant="h5"
-          component="h2"
-          gutterBottom
-          sx={{ fontSize: "1.4rem", fontWeight: 600, mb: 2 }}
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity="success"
+          sx={{ width: "100%" }}
         >
-          Project Journey
-        </Typography>
-
-        <Box sx={{ ml: 1 }}>
-          <Box sx={{ display: "flex", mb: 3 }}>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                mr: 2,
-              }}
-            >
-              <Avatar sx={{ bgcolor: "#bbdefb", color: "#1565c0" }}>
-                <SchoolIcon />
-              </Avatar>
-              <Box sx={{ width: 2, flexGrow: 1, bgcolor: "#bbdefb", mt: 1 }} />
-            </Box>
-            <Box>
-              <Typography
-                variant="h6"
-                sx={{ fontSize: "1rem", fontWeight: 600 }}
-              >
-                Research & Planning
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                January 2025
-              </Typography>
-              <Typography variant="body2">
-                Initial research and identification of campus resource
-                challenges. User interviews and needs assessment conducted with
-                students.
-              </Typography>
-            </Box>
-          </Box>
-
-          <Box sx={{ display: "flex", mb: 3 }}>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                mr: 2,
-              }}
-            >
-              <Avatar sx={{ bgcolor: "#c8e6c9", color: "#2e7d32" }}>
-                <WorkIcon />
-              </Avatar>
-              <Box sx={{ width: 2, flexGrow: 1, bgcolor: "#c8e6c9", mt: 1 }} />
-            </Box>
-            <Box>
-              <Typography
-                variant="h6"
-                sx={{ fontSize: "1rem", fontWeight: 600 }}
-              >
-                Design & Development
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                February - March 2025
-              </Typography>
-              <Typography variant="body2">
-                UI/UX design prototyping and user testing. Core functionality
-                development and integration with university systems.
-              </Typography>
-            </Box>
-          </Box>
-
-          <Box sx={{ display: "flex" }}>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                mr: 2,
-              }}
-            >
-              <Avatar sx={{ bgcolor: "#ffecb3", color: "#ff8f00" }}>
-                <SmartToyIcon />
-              </Avatar>
-            </Box>
-            <Box>
-              <Typography
-                variant="h6"
-                sx={{ fontSize: "1rem", fontWeight: 600 }}
-              >
-                AI Integration & Launch
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                April 2025
-              </Typography>
-              <Typography variant="body2">
-                Implementation of AI assistant to help navigate resources. Beta
-                testing and official launch to the university community.
-              </Typography>
-            </Box>
-          </Box>
-        </Box>
-      </Paper>
-
-      {/* Acknowledgments */}
-      <Paper
-        elevation={0}
-        sx={{
-          p: 3,
-          borderRadius: "8px",
-          backgroundColor: "white",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-          textAlign: "center",
-        }}
-      >
-        <Typography variant="body1" sx={{ mb: 2 }}>
-          This project was developed as part of the Human-Computer Interaction
-          course at Northeastern University.
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          © 2025 RetailHub Team. All rights reserved.
-        </Typography>
-      </Paper>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

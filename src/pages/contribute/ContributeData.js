@@ -629,8 +629,8 @@ function ContributeData(props) {
               <Divider sx={{ my: 2 }} />
 
               <Typography variant="body2" color="text.secondary">
-                Thank you for helping to make campus resources more accessible
-                to everyone!
+                Thank you for helping to make campus resources accessible to
+                everyone!
               </Typography>
             </CardContent>
           </Card>

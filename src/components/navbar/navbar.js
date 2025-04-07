@@ -23,6 +23,11 @@ import { Avatar } from "@mui/material";
 import rishabhAvtar from "../../assets/rishabh.png";
 import logo from "../../assets/logo.png";
 import CardHeader from "@mui/material/CardHeader";
+import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
+import InfoIcon from "@mui/icons-material/Info";
+import SmartToyIcon from "@mui/icons-material/SmartToy";
+import FolderIcon from "@mui/icons-material/Folder";
+import HomeIcon from "@mui/icons-material/Home";
 
 const drawerWidth = 240;
 
@@ -89,47 +94,52 @@ export default function Navbar(props) {
         >
           <div>
             <List>
-              {["Homepage", "Resources", "AI-Assistant", "About Us"].map(
-                (text, index) => (
-                  <ListItem key={text} disablePadding className="nav-item">
-                    <Link
-                      to={"/" + text.replace(/\s/g, "").toLowerCase()}
-                      style={{ textDecoration: "none" }}
-                    >
-                      <ListItemButton>
-                        <ListItemIcon>
-                          <Typography
-                            sx={{
-                              color: "white",
-                            }}
-                          >
-                            {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                          </Typography>
-                        </ListItemIcon>
-                        <ListItemText>
-                          <Typography
-                            variant="h6"
-                            noWrap
-                            component="div"
-                            sx={{
-                              color: "white",
-                              textDecoration: "none",
-                              textUnderlineOffset: "0px",
-                            }}
-                          >
-                            {text}
-                          </Typography>
-                        </ListItemText>
-                      </ListItemButton>
-                    </Link>
-                  </ListItem>
-                )
-              )}
+              {[
+                { text: "Homepage", icon: <HomeIcon /> },
+                { text: "Resources", icon: <FolderIcon /> },
+                {
+                  text: "AI-Assistant",
+                  icon: <SmartToyIcon />,
+                },
+                { text: "About Us", icon: <InfoIcon /> },
+              ].map(({ text, icon }) => (
+                <ListItem key={text} disablePadding className="nav-item">
+                  <Link
+                    to={"/" + text.replace(/\s/g, "").toLowerCase()}
+                    style={{ textDecoration: "none" }}
+                  >
+                    <ListItemButton>
+                      <ListItemIcon>
+                        <Typography
+                          sx={{
+                            color: "white",
+                          }}
+                        >
+                          {icon}
+                        </Typography>
+                      </ListItemIcon>
+                      <ListItemText>
+                        <Typography
+                          variant="h6"
+                          noWrap
+                          component="div"
+                          sx={{
+                            color: "white",
+                            textDecoration: "none",
+                            textUnderlineOffset: "0px",
+                          }}
+                        >
+                          {text}
+                        </Typography>
+                      </ListItemText>
+                    </ListItemButton>
+                  </Link>
+                </ListItem>
+              ))}
             </List>
 
             <Divider />
           </div>
-          {/* <Toolbar style={{ paddingTop: "290px" }} /> */}
           <div style={{ marginTop: "auto", cursor: "pointer" }}>
             <List>
               <ListItem key="contribute" disablePadding className="nav-item">
@@ -140,7 +150,7 @@ export default function Navbar(props) {
                         color: "white",
                       }}
                     >
-                      <PowerSettingsNewIcon />
+                      <VolunteerActivismIcon />
                     </Typography>
                   </ListItemIcon>
                   <Link

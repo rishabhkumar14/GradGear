@@ -1,0 +1,27 @@
+.side-nav {
+  background: #363740;
+  height: 100vh;
+}
+
+.logo {
+  margin: 10px;
+}
+
+.nav-item {
+  /* margin-left: auto;
+  margin-right: auto; */
+  padding-left: 50px;
+  margin-top: 5px;
+  height: 50px;
+  padding-top: 20px;
+  cursor: pointer;
+}
+
+.nav-item:hover {
+  background: #74747461;
+}
+
+.nav-item-clicked {
+  background: #74747461;
+  color: white;
+}

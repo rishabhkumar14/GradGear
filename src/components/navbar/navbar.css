@@ -1,0 +1,40 @@
+
+.MuiDrawer-paper {
+  background: #363740;
+  width: 240px;
+  height: 100vh;
+}
+
+.logo {
+  margin: 10px;
+}
+
+.nav-item {
+  padding-left: 16px;
+  margin-top: 8px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: #8f8f93;
+  text-decoration: none;
+}
+
+.nav-item:hover {
+  background: #74747461;
+}
+
+.nav-item-clicked {
+  background: #74747461;
+}
+
+.logout-div {
+  position: absolute;
+  bottom: 10px;
+  left: 16px;
+  cursor: pointer;
+}
+
+.logout-txt {
+  margin-left: 10px;
+}

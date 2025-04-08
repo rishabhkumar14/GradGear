@@ -141,8 +141,6 @@ function Homepage(props) {
             {cardMetrics.map((card, index) => {
               // For non-feature cards, use original styling
               const isOriginalCard = !card.isFeature;
-              const isFirstCard = index === 0;
-              const isAICard = index === 3;
 
               return (
                 <Grid item xs={12} sm={4} key={index}>

@@ -67,7 +67,11 @@ export default function Navbar(props) {
             {props.drawerOpen ? <ChevronLeftIcon /> : <MenuIcon />}
           </IconButton>
           <Link to="/" style={{ textDecoration: "none" }}>
-            <img src={logo} alt="RetailHub Logo" style={{ height: 45 }} />
+            <img
+              src={logo}
+              alt="RetailHub Logo"
+              style={{ height: 45, paddingTop: "10px" }}
+            />
           </Link>
 
           <Avatar

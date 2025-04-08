@@ -3,6 +3,8 @@ import { DataGrid } from "@mui/x-data-grid";
 import { Box, Button, Chip, Grid, LinearProgress } from "@mui/material";
 import DoneIcon from "@mui/icons-material/Done";
 import FailIcon from "@mui/icons-material/Close";
+import { Link } from "react-router-dom";
+
 const columns = [
   {
     field: "id",
@@ -12,43 +14,41 @@ const columns = [
     align: "center",
   },
   {
-    field: "vendorName",
-    headerName: "Vendor Name",
-    width: 150,
+    field: "resourceName",
+    headerName: "Last Used Resource",
+    width: 180,
     headerAlign: "center",
     align: "center",
   },
   {
-    field: "amountDue",
-    headerName: "Amount Due",
+    field: "usageCount",
+    headerName: "Times Used",
     width: 160,
     headerAlign: "center",
     align: "center",
+    type: "number",
   },
   {
-    field: "jobStatus",
-    headerName: "Payement Status",
+    field: "status",
+    headerName: "Status",
     align: "center",
     headerAlign: "center",
-    description: "This column is not sortable.",
+    description: "Status of the resource",
     sortable: false,
-    width: 250,
+    width: 220,
     renderCell: (params) => {
-      //const jobStatus = this.state.execution_status[params.id - 1];
-      const job_statuses = ["completed", "failed", "pending"];
-      const random = Math.floor(Math.random() * job_statuses.length);
-      const jobStatus = job_statuses[random];
+      const jobStatus = params.row.status;
       return (
         <Grid container direction="row" justifyContent="center" spacing={2}>
-          {jobStatus === "completed" ? (
+          {jobStatus === "available" ? (
             <Chip
               icon={<DoneIcon fontSize="small" style={{ color: "#388e3c" }} />}
               variant="outlined"
               size="small"
               style={{ borderColor: "#388e3c", color: "#388e3c" }}
-              label="Success"
+              label="Available"
             />
-          ) : jobStatus === "failed" ? (
+          ) : jobStatus === "unavailable" ? (
             <Chip
               icon={<FailIcon fontSize="small" style={{ color: "#d32f2f" }} />}
               variant="outlined"
@@ -58,7 +58,7 @@ const columns = [
                 color: "#d32f2f",
                 paddingLeft: "5px",
               }}
-              label="Failed"
+              label="Unavailable"
             />
           ) : (
             <Chip
@@ -75,7 +75,7 @@ const columns = [
                 paddingLeft: "5px",
                 width: "50%",
               }}
-              label="Pending"
+              label="Reserved"
             />
           )}
         </Grid>
@@ -83,62 +83,41 @@ const columns = [
     },
   },
   {
-    field: "paymentReason",
-    headerName: "Payment Reason",
+    field: "resourceType",
+    headerName: "Resource Type",
     width: 160,
     headerAlign: "center",
     align: "center",
   },
   {
-    field: "amountPaid",
-    headerName: "Paid Till",
-    type: "number",
+    field: "usageTime",
+    headerName: "Time",
+    type: "string",
     headerAlign: "center",
     align: "center",
     width: 150,
   },
-  //   {
-  //     field: "storeName",
-  //     headerName: "Store Name",
-  //     description: "This column has a value getter and is not sortable.",
-  //     sortable: false,
-  //     headerAlign: "center",
-  //     align: "center",
-  //     width: 200,
-  //     // valueGetter: (params) =>
-  //     //   `${params.row.firstName || ''} ${params.row.lastName || ''}`,
-  //   },
-
   {
     field: "actions",
     headerName: "Actions",
     headerAlign: "center",
     align: "center",
-    description: "This column is not sortable.",
+    description: "Navigate to resource page",
     sortable: false,
     width: 280,
     renderCell: (params) => {
-      //   const validation_details = this.state.validation_details[params.id - 1];
-
-      //   const onClick = (e) => {
-      //     //const currentRow = params.row;
-      //     return alert(
-      //       JSON.stringify(JSON.parse(validation_details), null, 2)
-      //       //JSON.stringify(JSON.parse(currentRow), null, 2)
-      //     );
-      //     //console.log(params);
-      //   };
-
       return (
         <Grid container direction="row" justifyContent="center" spacing={2}>
           <Grid item>
             <Button
+              sx={{ textTransform: "capitalize" }}
               variant="outlined"
               size="small"
               color="primary"
-              // onClick={onClick}
+              component={Link}
+              to={`/resources?id=${params.row.id}`}
             >
-              Info
+              Navigate
             </Button>
           </Grid>
         </Grid>
@@ -147,86 +126,87 @@ const columns = [
   },
 ];
 
+// Updated rows to match the column headings for a resources usage table
 const rows = [
   {
     id: 1,
-    vendorName: "Vendor X",
-    amountDue: 1500,
-    amountPaid: 800,
-    paymentReason: "Supplies",
-    payerName: "Your Company",
+    resourceName: "MacBook Pro",
+    usageCount: 42,
+    status: "available",
+    resourceType: "Laptop",
+    usageTime: "Yesterday, 2PM",
   },
   {
     id: 2,
-    vendorName: "Vendor Y",
-    amountDue: 800,
-    amountPaid: 400,
-    paymentReason: "Services",
-    payerName: "Your Company",
+    resourceName: "Snell Study Room",
+    usageCount: 15,
+    status: "reserved",
+    resourceType: "Space",
+    usageTime: "Today, 10AM",
   },
   {
     id: 3,
-    vendorName: "Vendor Z",
-    amountDue: 2500,
-    amountPaid: 1200,
-    paymentReason: "Equipment",
-    payerName: "Your Company",
+    resourceName: "USB-C Adapter",
+    usageCount: 78,
+    status: "available",
+    resourceType: "Charger",
+    usageTime: "3 days ago",
   },
   {
     id: 4,
-    vendorName: "Vendor A",
-    amountDue: 1200,
-    amountPaid: 700,
-    paymentReason: "Consulting",
-    payerName: "Your Company",
+    resourceName: "Sony HandyCam",
+    usageCount: 23,
+    status: "unavailable",
+    resourceType: "Camera",
+    usageTime: "Last week",
   },
   {
     id: 5,
-    vendorName: "Vendor B",
-    amountDue: 1000,
-    amountPaid: 600,
-    paymentReason: "Materials",
-    payerName: "Your Company",
+    resourceName: "Microscope",
+    usageCount: 8,
+    status: "available",
+    resourceType: "Accessory",
+    usageTime: "2 weeks ago",
   },
   {
     id: 6,
-    vendorName: "Vendor C",
-    amountDue: 1800,
-    amountPaid: 1500,
-    paymentReason: "Maintenance",
-    payerName: "Your Company",
+    resourceName: "Surface Laptop",
+    usageCount: 37,
+    status: "reserved",
+    resourceType: "Laptop",
+    usageTime: "Yesterday, 4PM",
   },
   {
     id: 7,
-    vendorName: "Vendor D",
-    amountDue: 3000,
-    amountPaid: 2000,
-    paymentReason: "Software",
-    payerName: "Your Company",
+    resourceName: "MagSafe Charger",
+    usageCount: 61,
+    status: "available",
+    resourceType: "Charger",
+    usageTime: "Today, 9AM",
   },
   {
     id: 8,
-    vendorName: "Vendor E",
-    amountDue: 900,
-    amountPaid: 500,
-    paymentReason: "Advertising",
-    payerName: "Your Company",
+    resourceName: "Room Reserve",
+    usageCount: 29,
+    status: "available",
+    resourceType: "Space",
+    usageTime: "2 days ago",
   },
   {
     id: 9,
-    vendorName: "Vendor F",
-    amountDue: 2000,
-    amountPaid: 1000,
-    paymentReason: "Construction",
-    payerName: "Your Company",
+    resourceName: "Projector",
+    usageCount: 14,
+    status: "unavailable",
+    resourceType: "Accessory",
+    usageTime: "Last month",
   },
   {
     id: 10,
-    vendorName: "Vendor G",
-    amountDue: 1300,
-    amountPaid: 800,
-    paymentReason: "Logistics",
-    payerName: "Your Company",
+    resourceName: "Bluetooth Presenter",
+    usageCount: 52,
+    status: "available",
+    resourceType: "Vending Accessory",
+    usageTime: "Yesterday, 11AM",
   },
 ];
 

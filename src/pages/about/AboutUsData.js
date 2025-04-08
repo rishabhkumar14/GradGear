@@ -261,7 +261,7 @@ function AboutUsData(props) {
 
               <Typography variant="body1" paragraph>
                 We value your feedback! Let us know how we're doing and how we
-                can improve the RetailHub Resources portal.
+                can improve the GradGear Resources portal.
               </Typography>
 
               <form onSubmit={handleFeedbackSubmit}>
@@ -453,8 +453,8 @@ function AboutUsData(props) {
                   sx={{ color: "primary.main", mr: 1 }}
                 />
                 <Typography variant="body2">
-                  <Link href="mailto:support@retailhub.edu" underline="hover">
-                    support@retailhub.edu
+                  <Link href="mailto:support@gradgear.edu" underline="hover">
+                    support@gradgear.edu
                   </Link>
                 </Typography>
               </Box>

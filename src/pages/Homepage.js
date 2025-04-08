@@ -17,7 +17,6 @@ import bagIcon from "../assets/headers/ic_glass_bag.png";
 import buyIcon from "../assets/headers/ic_glass_buy.png";
 import msgIcon from "../assets/headers/ic_glass_message.png";
 import userIcon from "../assets/headers/ic_glass_users.png";
-import "../styles/dashboard.css";
 import {
   BarChart,
   Bar,

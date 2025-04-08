@@ -12,6 +12,7 @@ import {
   Link,
   IconButton,
   Avatar,
+  Collapse,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
@@ -27,6 +28,8 @@ import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import StorefrontIcon from "@mui/icons-material/Storefront";
 import MemoryIcon from "@mui/icons-material/Memory";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import resourcesDataSet from "./ResourcesData.js";
 
 // Import image
@@ -74,6 +77,24 @@ function Resources(props) {
   const scrollContainerRefs = React.useRef({});
   const [visibleButtons, setVisibleButtons] = React.useState({});
   const [componentMounted, setComponentMounted] = React.useState(false);
+  const [expandedCategories, setExpandedCategories] = React.useState({});
+
+  // Initialize expanded state for all categories
+  React.useEffect(() => {
+    const initialExpandedState = {};
+    Object.keys(resourcesData).forEach((category) => {
+      initialExpandedState[category] = true; // All categories start expanded
+    });
+    setExpandedCategories(initialExpandedState);
+  }, []);
+
+  // Toggle category expansion
+  const toggleCategory = (category) => {
+    setExpandedCategories((prev) => ({
+      ...prev,
+      [category]: !prev[category],
+    }));
+  };
 
   // Filter resources based on search term
   const filteredResources = React.useMemo(() => {
@@ -121,7 +142,10 @@ function Resources(props) {
     const newVisibility = {};
 
     Object.keys(filteredResources).forEach((category) => {
-      if (filteredResources[category].length > 0) {
+      if (
+        filteredResources[category].length > 0 &&
+        expandedCategories[category]
+      ) {
         // Always show right button if more than 2 items
         if (filteredResources[category].length > 2) {
           newVisibility[category] = { left: false, right: true };
@@ -149,17 +173,17 @@ function Resources(props) {
     return () => timers.forEach((timer) => clearTimeout(timer));
   }, []);
 
-  // Update button visibility when filtered resources change
+  // Update button visibility when filtered resources or expanded states change
   React.useEffect(() => {
     if (componentMounted) {
-      // Wait for the DOM to update with new filtered resources
+      // Wait for the DOM to update
       const timer = setTimeout(() => {
         updateAllButtonVisibility();
       }, 300);
 
       return () => clearTimeout(timer);
     }
-  }, [filteredResources, componentMounted]);
+  }, [filteredResources, expandedCategories, componentMounted]);
 
   // Update button visibility when drawer state changes
   React.useEffect(() => {
@@ -598,10 +622,14 @@ function Resources(props) {
               sx={{
                 display: "flex",
                 alignItems: "center",
-                mb: 2,
+                mb: expandedCategories[category] ? 2 : 0,
                 pb: 1,
                 borderBottom: `2px solid ${getCategoryColor(category)}`,
+                cursor: "pointer",
+                userSelect: "none",
+                // Remove hover effect
               }}
+              onClick={() => toggleCategory(category)}
             >
               <Avatar
                 sx={{
@@ -613,7 +641,7 @@ function Resources(props) {
               >
                 {getCategoryIcon(category)}
               </Avatar>
-              <Box>
+              <Box sx={{ flexGrow: 1 }}>
                 <Typography
                   variant="h5"
                   component="h2"
@@ -635,8 +663,33 @@ function Resources(props) {
                   {filteredResources[category].length} items available
                 </Typography>
               </Box>
+              {/* Expand/Collapse Icon - White color */}
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent double toggling
+                  toggleCategory(category);
+                }}
+                sx={{
+                  color: getCategoryColor(category), // Use the same color as the category title
+                }}
+              >
+                {expandedCategories[category] ? (
+                  <ExpandLessIcon />
+                ) : (
+                  <ExpandMoreIcon />
+                )}
+              </IconButton>
             </Box>
-            {renderResourceCards(filteredResources[category], category)}
+
+            {/* Collapsible content */}
+            <Collapse
+              in={expandedCategories[category]}
+              timeout="auto"
+              unmountOnExit
+            >
+              {renderResourceCards(filteredResources[category], category)}
+            </Collapse>
           </Box>
         ))
       ) : (

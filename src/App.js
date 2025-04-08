@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Navbar from "./components/navbar/navbar.js";
+import Navbar from "./components/navbar.js";
 import Homepage from "./pages/Homepage.js";
 import Inventory from "./pages/resources/Inventory.js";
 import Assistant from "./pages/assistant/Assistant.js";

@@ -230,7 +230,7 @@ const rows = [
   },
 ];
 
-export default function VendorData() {
+export default function HomePageTable() {
   return (
     <div style={{ width: "100%", borderColor: "primary" }}>
       <DataGrid

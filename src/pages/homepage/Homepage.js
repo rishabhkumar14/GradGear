@@ -13,10 +13,10 @@ import {
 } from "@mui/material";
 import { Link } from "react-router-dom";
 
-import bagIcon from "../assets/headers/ic_glass_bag.png";
-import buyIcon from "../assets/headers/ic_glass_buy.png";
-import msgIcon from "../assets/headers/ic_glass_message.png";
-import userIcon from "../assets/headers/ic_glass_users.png";
+import bagIcon from "../../assets/headers/ic_glass_bag.png";
+import buyIcon from "../../assets/headers/ic_glass_buy.png";
+import msgIcon from "../../assets/headers/ic_glass_message.png";
+import userIcon from "../../assets/headers/ic_glass_users.png";
 import {
   BarChart,
   Bar,
@@ -35,7 +35,7 @@ import {
   Cell,
 } from "recharts";
 // import { highlightSelectedNavItem } from "../SideNavigation";
-import VendorData from "./VendorData";
+import VendorData from "./HomePageTable";
 
 function Homepage(props) {
   let cardMetrics = [

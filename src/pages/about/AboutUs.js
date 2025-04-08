@@ -1,27 +1,8 @@
 import * as React from "react";
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Grid,
-  Paper,
-  Stack,
-  Typography,
-} from "@mui/material";
-import bagIcon from "../../assets/headers/ic_glass_bag.png";
-import buyIcon from "../../assets/headers/ic_glass_buy.png";
-import msgIcon from "../../assets/headers/ic_glass_message.png";
-import userIcon from "../../assets/headers/ic_glass_users.png";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import FinancesIncome from "./AboutUsData";
+import { Box, Grid } from "@mui/material";
 import AboutUsData from "./AboutUsData";
 
 export default function Contribute(props) {
-  const [value, setValue] = React.useState(0);
-
   return (
     <Box
       component="main"
@@ -35,7 +16,6 @@ export default function Contribute(props) {
         height: "200vh",
       }}
     >
-      <br />
       <Grid
         container
         className="finances-container"

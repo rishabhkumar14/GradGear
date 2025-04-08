@@ -1,23 +1,5 @@
 import * as React from "react";
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Grid,
-  Paper,
-  Stack,
-  Typography,
-} from "@mui/material";
-import bagIcon from "../../assets/headers/ic_glass_bag.png";
-import buyIcon from "../../assets/headers/ic_glass_buy.png";
-import msgIcon from "../../assets/headers/ic_glass_message.png";
-import userIcon from "../../assets/headers/ic_glass_users.png";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import FinancesIncome from "./ContributeData";
-import AboutUsData from "./ContributeData";
+import { Box, Grid } from "@mui/material";
 import ContributeData from "./ContributeData";
 
 export default function About(props) {

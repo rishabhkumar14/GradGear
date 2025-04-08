@@ -23,6 +23,7 @@ export default function Contribute(props) {
         spacing={3}
         style={{
           paddingLeft: 70,
+          paddingTop: "20px",
           paddingBottom: "40px",
           paddingRight: 40,
         }}

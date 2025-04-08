@@ -1,73 +1,64 @@
 import * as React from "react";
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Grid,
-  Paper,
-  Stack,
-  Toolbar,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Grid, Paper, Stack, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
+// Import icons
 import bagIcon from "../../assets/headers/ic_glass_bag.png";
 import buyIcon from "../../assets/headers/ic_glass_buy.png";
 import msgIcon from "../../assets/headers/ic_glass_message.png";
 import userIcon from "../../assets/headers/ic_glass_users.png";
-import {
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  LineChart,
-  Line,
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  Cell,
-} from "recharts";
-// import { highlightSelectedNavItem } from "../SideNavigation";
+
+// Import homepage table
 import VendorData from "./HomePageTable";
 
 function Homepage(props) {
   let cardMetrics = [
     {
-      title: "Weekly Usage",
-      metrics: "71k",
+      title: "Navigator",
+      metrics: "Resource",
       emoji: bagIcon,
+      link: "/resources",
+      isFeature: true,
+      color: "rgba(25, 118, 210, 0.1)", // Slightly more visible blue
+      textColor: "#1976d2",
     },
     {
       title: "New Users",
       metrics: "200k",
       emoji: userIcon,
+      color: "white", // Original color
+      textColor: "inherit", // Original color
     },
     {
       title: "Total Resources",
       metrics: "50k",
       emoji: buyIcon,
+      color: "white", // Original color
+      textColor: "inherit", // Original color
     },
     {
-      title: "Students Helped",
-      metrics: "200",
+      title: "AI Assistant",
+      metrics: "Get Help",
       emoji: msgIcon,
+      link: "/ai-assistant",
+      isFeature: true,
+      color: "rgba(25, 118, 210, 0.1)", // Slightly more visible blue
+      textColor: "#1976d2",
     },
     {
       title: "AI Queries Solved",
       metrics: "320",
       emoji: buyIcon,
+      color: "white", // Original color
+      textColor: "inherit", // Original color
     },
     {
       title: "Contributers",
       metrics: "25",
       emoji: bagIcon,
+      color: "white", // Original color
+      textColor: "inherit", // Original color
     },
   ];
 
@@ -147,37 +138,95 @@ function Homepage(props) {
             spacing={2}
             style={{ paddingTop: 25 }}
           >
-            {cardMetrics.map((card) => {
+            {cardMetrics.map((card, index) => {
+              // For non-feature cards, use original styling
+              const isOriginalCard = !card.isFeature;
+              const isFirstCard = index === 0;
+              const isAICard = index === 3;
+
               return (
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={4} key={index}>
                   <Paper
-                    component={Stack}
+                    component={card.isFeature ? Link : Stack}
+                    to={card.isFeature ? card.link : undefined}
                     spacing={3}
                     direction="row"
                     className="paper2"
                     sx={{
                       px: 3,
-                      py: 5,
+                      py: card.isFeature ? 4.2 : 5,
                       borderRadius: 2,
                       padding: 2,
+                      bgcolor: card.color,
+                      transition: "all 0.2s",
+                      border: card.isFeature
+                        ? "1px solid rgba(25, 118, 210, 0.2)"
+                        : "none",
+                      "&:hover": {
+                        transform: card.isFeature ? "translateY(-4px)" : "none",
+                        boxShadow: card.isFeature
+                          ? "0 4px 12px rgba(25, 118, 210, 0.2)"
+                          : "none",
+                        bgcolor: card.isFeature
+                          ? "rgba(25, 118, 210, 0.15)"
+                          : card.color,
+                      },
+                      textDecoration: "none",
+                      display: "flex",
+                      position: "relative", // For arrow positioning
                     }}
                   >
                     {<img alt="icon" src={card.emoji} /> && (
-                      <Box sx={{ width: 64, height: 64 }}>
+                      <Box
+                        sx={{
+                          width: 64,
+                          height: 64,
+                          mr: card.isFeature ? 2 : 0,
+                        }}
+                      >
                         {<img alt="icon" src={card.emoji} />}
                       </Box>
                     )}
 
-                    <Stack spacing={0.5}>
-                      <Typography variant="h4">{card.metrics}</Typography>
-
+                    <Stack spacing={0.2}>
+                      {" "}
+                      {/* Reduced spacing between metrics and title */}
+                      <Typography
+                        variant="h4"
+                        sx={{
+                          color: isOriginalCard ? "inherit" : card.textColor,
+                          fontSize: card.isFeature ? "1.75rem" : undefined,
+                        }}
+                      >
+                        {card.metrics}
+                      </Typography>
                       <Typography
                         variant="subtitle2"
-                        sx={{ color: "text.disabled" }}
+                        sx={{
+                          color: isOriginalCard
+                            ? "text.disabled"
+                            : card.textColor,
+                        }}
                       >
                         {card.title}
                       </Typography>
                     </Stack>
+
+                    {/* Slightly larger arrow indicator for feature cards */}
+                    {card.isFeature && (
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          right: 12,
+                          bottom: 12,
+                          color: card.textColor,
+                          opacity: 0.7,
+                        }}
+                      >
+                        <ArrowForwardIcon sx={{ fontSize: "1.05rem" }} />{" "}
+                        {/* 5% bigger */}
+                      </Box>
+                    )}
                   </Paper>
                 </Grid>
               );

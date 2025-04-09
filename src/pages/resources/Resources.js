@@ -640,7 +640,7 @@ function Resources(props) {
               borderRadius: "6px",
             }}
           >
-            Filter
+            Search
           </Button>
         </Paper>
       </Box>

@@ -21,6 +21,8 @@ import {
   Rating,
   Avatar,
   Divider,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
 import EmailIcon from "@mui/icons-material/Email";
@@ -52,6 +54,9 @@ const projectInfo = {
 };
 
 function AboutUsData(props) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
   const [rating, setRating] = React.useState(0);
   const [hover, setHover] = React.useState(-1);
   const [feedbackType, setFeedbackType] = React.useState("general");
@@ -116,378 +121,588 @@ function AboutUsData(props) {
     5: "Excellent",
   };
 
+  // This will ensure the background fills the entire viewport
+  React.useEffect(() => {
+    document.body.style.backgroundColor = "#f0f0f9";
+    document.body.style.margin = "0";
+    document.body.style.padding = "0";
+
+    return () => {
+      document.body.style.backgroundColor = "";
+    };
+  }, []);
+
   return (
-    <Box
-      component="main"
-      sx={{
-        backgroundColor: "#f0f0f9",
-        flexGrow: 1,
-        p: 3,
-        transition: "margin-left 0.3s ease",
-        marginLeft: `${props.drawerOpen ? 200 : 0}px`,
-        width: `calc(100% - ${props.drawerOpen ? 200 : 0}px)`,
-        minHeight: "100vh",
-      }}
-    >
-      <Box sx={{ pt: 4, pb: 2 }}>
-        {/* <Typography
-          variant="h4"
-          component="h1"
-          gutterBottom
-          sx={{ fontSize: "1.8rem" }}
-        >
-          About RetailHub
-        </Typography>
-        <Typography variant="body1" color="text.secondary" paragraph>
-          Learn about our project, provide feedback, or get in touch with our
-          team.
-        </Typography> */}
-      </Box>
+    <>
+      {/* Apply the background color to the entire document */}
+      <Box
+        sx={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "#f0f0f9",
+          zIndex: -1,
+        }}
+      />
 
-      <Grid container spacing={3}>
-        {/* About Us Card */}
-        <Grid item xs={12} md={4}>
-          <Card
-            sx={{
-              height: "100%",
-              borderRadius: "8px",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-            }}
-          >
-            <CardContent sx={{ p: 3 }}>
-              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                <Avatar sx={{ bgcolor: "#e3f2fd", mr: 1.5 }}>
-                  <InfoIcon sx={{ color: "#1976d2" }} />
-                </Avatar>
-                <Typography
-                  variant="h5"
-                  component="h2"
-                  sx={{ fontSize: "1.4rem", fontWeight: 600 }}
-                >
-                  About Us
-                </Typography>
-              </Box>
+      <Box
+        component="main"
+        sx={{
+          backgroundColor: "#f0f0f9",
+          flexGrow: 1,
+          p: { xs: 3.5, md: 3.5 }, // Increased padding for larger screens
+          transition: "margin-left 0.3s ease",
+          pr: { md: 10 },
 
-              <Typography variant="body1" paragraph sx={{ mb: 2 }}>
-                {projectInfo.description}
-              </Typography>
+          marginLeft: {
+            xs: 0,
+            sm: `${props.drawerOpen ? 280 : 0}px`,
+          },
 
-              <Box sx={{ mb: 3 }}>
-                <Typography
-                  variant="subtitle1"
-                  sx={{ fontWeight: 600, fontSize: "0.95rem", mb: 1 }}
-                >
-                  Key Features
-                </Typography>
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.8 }}>
-                  {projectInfo.highlights.map((highlight, index) => (
-                    <Chip
-                      key={index}
-                      label={highlight}
-                      variant="outlined"
-                      size="small"
-                      sx={{
-                        backgroundColor: "#f5f5f5",
-                        borderColor: "transparent",
-                        borderRadius: "6px",
-                        mb: 0.8,
-                      }}
-                    />
-                  ))}
+          width: {
+            xs: "100%",
+            sm: `calc(100% - ${props.drawerOpen ? 280 : 0}px)`,
+          },
+          // minHeight: "100vh",
+          marginTop: "50px", // Reduced top margin
+          pb: 4, // Reduced bottom padding
+        }}
+      >
+        <Box sx={{ pt: { xs: 1, md: 2 }, pb: { xs: 0.5, md: 1 } }}>
+          {/* Empty title area with reduced padding */}
+        </Box>
+
+        <Grid container spacing={{ xs: 1.5, md: 2.5 }}>
+          {" "}
+          {/* Reduced grid spacing */}
+          {/* About Us Card */}
+          <Grid item xs={12} md={4}>
+            <Card
+              sx={{
+                height: "100%",
+                borderRadius: "8px",
+                boxShadow: "0 1px 6px rgba(0,0,0,0.05)", // Lighter shadow
+              }}
+            >
+              <CardContent sx={{ p: { xs: 1.5, md: 2.5 } }}>
+                {" "}
+                {/* Reduced padding */}
+                <Box sx={{ display: "flex", alignItems: "center", mb: 1.5 }}>
+                  {" "}
+                  {/* Reduced margin */}
+                  <Avatar
+                    sx={{ bgcolor: "#e3f2fd", mr: 1.5, width: 32, height: 32 }}
+                  >
+                    {" "}
+                    {/* Smaller avatar */}
+                    <InfoIcon
+                      sx={{ color: "#1976d2", fontSize: "1.1rem" }}
+                    />{" "}
+                    {/* Smaller icon */}
+                  </Avatar>
+                  <Typography
+                    variant="h5"
+                    component="h2"
+                    sx={{
+                      fontSize: { xs: "1.1rem", md: "1.3rem" }, // Smaller font
+                      fontWeight: 600,
+                    }}
+                  >
+                    About Us
+                  </Typography>
                 </Box>
-              </Box>
-
-              <Box>
                 <Typography
-                  variant="subtitle1"
-                  sx={{ fontWeight: 600, fontSize: "0.95rem", mb: 1 }}
-                >
-                  Technologies Used
-                </Typography>
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.8 }}>
-                  {projectInfo.technologies.map((tech, index) => (
-                    <Chip
-                      key={index}
-                      label={tech}
-                      size="small"
-                      sx={{
-                        backgroundColor: "#e3f2fd",
-                        color: "#1565c0",
-                        borderRadius: "6px",
-                        fontWeight: 500,
-                        mb: 0.8,
-                      }}
-                    />
-                  ))}
-                </Box>
-              </Box>
-
-              <Divider sx={{ my: 3 }} />
-
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                textAlign="center"
-              >
-                This project was developed for the Human-Computer Interaction
-                course CS-5340 at Northeastern University.
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        {/* Rate Us Card */}
-        <Grid item xs={12} md={4}>
-          <Card
-            sx={{
-              height: "100%",
-              borderRadius: "8px",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-            }}
-          >
-            <CardContent sx={{ p: 3 }}>
-              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                <Avatar sx={{ bgcolor: "#fff8e1", mr: 1.5 }}>
-                  <FeedbackIcon sx={{ color: "#f57f17" }} />
-                </Avatar>
-                <Typography
-                  variant="h5"
-                  component="h2"
-                  sx={{ fontSize: "1.4rem", fontWeight: 600 }}
-                >
-                  Rate Us
-                </Typography>
-              </Box>
-
-              <Typography variant="body1" paragraph>
-                We value your feedback! Let us know how we're doing and how we
-                can improve the GradGear Resources portal.
-              </Typography>
-
-              <form onSubmit={handleFeedbackSubmit}>
-                <Box
+                  variant="body1"
+                  paragraph
                   sx={{
-                    mb: 3,
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "flex-start",
+                    mb: 1.5,
+                    fontSize: { xs: "0.85rem", md: "0.9rem" }, // Smaller font
                   }}
                 >
+                  {projectInfo.description}
+                </Typography>
+                <Box sx={{ mb: 2.5 }}>
                   <Typography
-                    component="legend"
-                    sx={{ mb: 1, fontWeight: 500 }}
+                    variant="subtitle1"
+                    sx={{
+                      fontWeight: 600,
+                      fontSize: { xs: "0.8rem", md: "0.85rem" }, // Smaller font
+                      mb: 0.75,
+                    }}
                   >
-                    How would you rate your experience?
+                    Key Features
                   </Typography>
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <Rating
-                      name="hover-feedback"
-                      value={rating}
-                      precision={1}
-                      onChange={(event, newValue) => setRating(newValue)}
-                      onChangeActive={(event, newHover) => setHover(newHover)}
-                      emptyIcon={
-                        <StarIcon
-                          style={{ opacity: 0.55 }}
-                          fontSize="inherit"
-                        />
-                      }
-                      size="large"
-                      sx={{ mr: 2 }}
-                    />
-                    {rating !== null && (
-                      <Typography variant="body2" color="text.secondary">
-                        {labels[hover !== -1 ? hover : rating]}
-                      </Typography>
-                    )}
+                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.6 }}>
+                    {" "}
+                    {/* Smaller gap */}
+                    {projectInfo.highlights.map((highlight, index) => (
+                      <Chip
+                        key={index}
+                        label={highlight}
+                        variant="outlined"
+                        size="small"
+                        sx={{
+                          backgroundColor: "#f5f5f5",
+                          borderColor: "transparent",
+                          borderRadius: "6px",
+                          mb: 0.6,
+                          fontSize: { xs: "0.6rem", md: "0.7rem" }, // Smaller font
+                          height: 22, // Smaller height
+                        }}
+                      />
+                    ))}
                   </Box>
                 </Box>
-
-                <FormControl component="fieldset" sx={{ mb: 3, width: "100%" }}>
-                  <FormLabel component="legend" sx={{ fontWeight: 500 }}>
-                    What type of feedback?
-                  </FormLabel>
-                  <RadioGroup
-                    row
-                    aria-label="feedback-type"
-                    name="feedback-type"
-                    value={feedbackType}
-                    onChange={(e) => setFeedbackType(e.target.value)}
+                <Box>
+                  <Typography
+                    variant="subtitle1"
+                    sx={{
+                      fontWeight: 600,
+                      fontSize: { xs: "0.8rem", md: "0.85rem" }, // Smaller font
+                      mb: 0.75,
+                    }}
                   >
-                    <FormControlLabel
-                      value="general"
-                      control={<Radio />}
-                      label="General"
-                    />
-                    <FormControlLabel
-                      value="feature"
-                      control={<Radio />}
-                      label="Feature Request"
-                    />
-                    <FormControlLabel
-                      value="bug"
-                      control={<Radio />}
-                      label="Bug Report"
-                    />
-                  </RadioGroup>
-                </FormControl>
-
-                <TextField
-                  fullWidth
-                  multiline
-                  rows={4}
-                  label="Your Feedback"
-                  placeholder="Tell us what you think about our platform..."
-                  value={feedbackText}
-                  onChange={(e) => setFeedbackText(e.target.value)}
-                  sx={{ mb: 3 }}
-                />
-
-                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    disabled={!rating}
-                    endIcon={<SendIcon />}
-                    sx={{ borderRadius: "6px" }}
-                  >
-                    Submit Feedback
-                  </Button>
+                    Technologies Used
+                  </Typography>
+                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.6 }}>
+                    {" "}
+                    {/* Smaller gap */}
+                    {projectInfo.technologies.map((tech, index) => (
+                      <Chip
+                        key={index}
+                        label={tech}
+                        size="small"
+                        sx={{
+                          backgroundColor: "#e3f2fd",
+                          color: "#1565c0",
+                          borderRadius: "6px",
+                          fontWeight: 500,
+                          mb: 0.6,
+                          fontSize: { xs: "0.6rem", md: "0.7rem" }, // Smaller font
+                          height: 22, // Smaller height
+                        }}
+                      />
+                    ))}
+                  </Box>
                 </Box>
-              </form>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        {/* Contact Us Card */}
-        <Grid item xs={12} md={4}>
-          <Card
-            sx={{
-              height: "100%",
-              borderRadius: "8px",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-            }}
-          >
-            <CardContent sx={{ p: 3 }}>
-              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                <Avatar sx={{ bgcolor: "#e8f5e9", mr: 1.5 }}>
-                  <ContactSupportIcon sx={{ color: "#2e7d32" }} />
-                </Avatar>
+                <Divider sx={{ my: 2 }} /> {/* Reduced margin */}
                 <Typography
-                  variant="h5"
-                  component="h2"
-                  sx={{ fontSize: "1.4rem", fontWeight: 600 }}
+                  variant="body2"
+                  color="text.secondary"
+                  textAlign="center"
+                  sx={{ fontSize: { xs: "0.7rem", md: "0.75rem" } }} // Smaller font
                 >
-                  Contact Us
+                  This project was developed for the Human-Computer Interaction
+                  course CS-5340 at Northeastern University.
                 </Typography>
-              </Box>
-
-              <Typography variant="body1" paragraph>
-                Have questions or need assistance? Reach out to our team and
-                we'll get back to you soon.
-              </Typography>
-
-              <form onSubmit={handleContactSubmit}>
-                <TextField
-                  fullWidth
-                  required
-                  label="Your Name"
-                  value={contactName}
-                  onChange={(e) => setContactName(e.target.value)}
-                  size="small"
-                  sx={{ mb: 2 }}
-                />
-
-                <TextField
-                  fullWidth
-                  required
-                  label="Email Address"
-                  type="email"
-                  value={contactEmail}
-                  onChange={(e) => setContactEmail(e.target.value)}
-                  size="small"
-                  sx={{ mb: 2 }}
-                />
-
-                <TextField
-                  fullWidth
-                  required
-                  label="Subject"
-                  value={contactSubject}
-                  onChange={(e) => setContactSubject(e.target.value)}
-                  size="small"
-                  sx={{ mb: 2 }}
-                />
-
-                <TextField
-                  fullWidth
-                  required
-                  multiline
-                  rows={3}
-                  label="Message"
-                  value={contactMessage}
-                  onChange={(e) => setContactMessage(e.target.value)}
-                  sx={{ mb: 3 }}
-                />
-
-                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    disabled={!contactMessage}
-                    endIcon={<SendIcon />}
-                    sx={{ borderRadius: "6px" }}
+              </CardContent>
+            </Card>
+          </Grid>
+          {/* Rate Us Card */}
+          <Grid item xs={12} md={4}>
+            <Card
+              sx={{
+                height: "100%",
+                borderRadius: "8px",
+                boxShadow: "0 1px 6px rgba(0,0,0,0.05)", // Lighter shadow
+              }}
+            >
+              <CardContent sx={{ p: { xs: 1.5, md: 2.5 } }}>
+                {" "}
+                {/* Reduced padding */}
+                <Box sx={{ display: "flex", alignItems: "center", mb: 1.5 }}>
+                  {" "}
+                  {/* Reduced margin */}
+                  <Avatar
+                    sx={{ bgcolor: "#fff8e1", mr: 1.5, width: 32, height: 32 }}
                   >
-                    Send Message
-                  </Button>
+                    {" "}
+                    {/* Smaller avatar */}
+                    <FeedbackIcon
+                      sx={{ color: "#f57f17", fontSize: "1.1rem" }}
+                    />{" "}
+                    {/* Smaller icon */}
+                  </Avatar>
+                  <Typography
+                    variant="h5"
+                    component="h2"
+                    sx={{
+                      fontSize: { xs: "1.1rem", md: "1.3rem" }, // Smaller font
+                      fontWeight: 600,
+                    }}
+                  >
+                    Rate Us
+                  </Typography>
                 </Box>
-              </form>
-
-              <Divider sx={{ my: 3 }} />
-
-              <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                <EmailIcon
-                  fontSize="small"
-                  sx={{ color: "primary.main", mr: 1 }}
-                />
-                <Typography variant="body2">
-                  <Link href="mailto:support@gradgear.edu" underline="hover">
-                    support@gradgear.edu
-                  </Link>
+                <Typography
+                  variant="body1"
+                  paragraph
+                  sx={{ fontSize: { xs: "0.85rem", md: "0.9rem" } }} // Smaller font
+                >
+                  We value your feedback! Let us know how we're doing and how we
+                  can improve the GradGear Resources portal.
                 </Typography>
-              </Box>
+                <form onSubmit={handleFeedbackSubmit}>
+                  <Box
+                    sx={{
+                      mb: 2, // Reduced margin
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                    }}
+                  >
+                    <Typography
+                      component="legend"
+                      sx={{
+                        mb: 0.75, // Reduced margin
+                        fontWeight: 500,
+                        fontSize: { xs: "0.8rem", md: "0.85rem" }, // Smaller font
+                      }}
+                    >
+                      How would you rate your experience?
+                    </Typography>
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                      <Rating
+                        name="hover-feedback"
+                        value={rating}
+                        precision={1}
+                        onChange={(event, newValue) => setRating(newValue)}
+                        onChangeActive={(event, newHover) => setHover(newHover)}
+                        emptyIcon={
+                          <StarIcon
+                            style={{ opacity: 0.55 }}
+                            fontSize="inherit"
+                          />
+                        }
+                        size="small" // Smaller rating stars
+                        sx={{ mr: 1.5 }} // Reduced margin
+                      />
+                      {rating !== null && (
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ fontSize: { xs: "0.7rem", md: "0.75rem" } }} // Smaller font
+                        >
+                          {labels[hover !== -1 ? hover : rating]}
+                        </Typography>
+                      )}
+                    </Box>
+                  </Box>
 
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <LocationOnIcon
-                  fontSize="small"
-                  sx={{ color: "primary.main", mr: 1 }}
-                />
-                <Typography variant="body2">
-                  Northeastern University, 360 Huntington Ave, Boston, MA 02115
+                  <FormControl
+                    component="fieldset"
+                    sx={{ mb: 2, width: "100%" }}
+                  >
+                    {" "}
+                    {/* Reduced margin */}
+                    <FormLabel
+                      component="legend"
+                      sx={{
+                        fontWeight: 500,
+                        fontSize: { xs: "0.8rem", md: "0.85rem" }, // Smaller font
+                      }}
+                    >
+                      What type of feedback?
+                    </FormLabel>
+                    <RadioGroup
+                      row={!isMobile}
+                      aria-label="feedback-type"
+                      name="feedback-type"
+                      value={feedbackType}
+                      onChange={(e) => setFeedbackType(e.target.value)}
+                    >
+                      <FormControlLabel
+                        value="general"
+                        control={<Radio size="small" />}
+                        label={
+                          <Typography
+                            sx={{ fontSize: { xs: "0.8rem", md: "0.85rem" } }} // Smaller font
+                          >
+                            General
+                          </Typography>
+                        }
+                      />
+                      <FormControlLabel
+                        value="feature"
+                        control={<Radio size="small" />}
+                        label={
+                          <Typography
+                            sx={{ fontSize: { xs: "0.8rem", md: "0.85rem" } }} // Smaller font
+                          >
+                            Feature Request
+                          </Typography>
+                        }
+                      />
+                      <FormControlLabel
+                        value="bug"
+                        control={<Radio size="small" />}
+                        label={
+                          <Typography
+                            sx={{ fontSize: { xs: "0.8rem", md: "0.85rem" } }} // Smaller font
+                          >
+                            Bug Report
+                          </Typography>
+                        }
+                      />
+                    </RadioGroup>
+                  </FormControl>
+
+                  <TextField
+                    fullWidth
+                    multiline
+                    rows={isMobile ? 2 : 3} // Reduced rows
+                    label="Your Feedback"
+                    placeholder="Tell us what you think about our platform..."
+                    value={feedbackText}
+                    onChange={(e) => setFeedbackText(e.target.value)}
+                    sx={{ mb: 2 }} // Reduced margin
+                    size="small" // Smaller text field
+                    InputProps={{
+                      style: {
+                        fontSize: isMobile ? "0.8rem" : "0.85rem", // Smaller font
+                      },
+                    }}
+                  />
+
+                  <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      disabled={!rating}
+                      endIcon={<SendIcon fontSize="small" />} // Smaller icon
+                      sx={{
+                        borderRadius: "6px",
+                        fontSize: { xs: "0.75rem", md: "0.8rem" }, // Smaller font
+                        py: 0.75, // Reduced padding
+                        px: 1.5, // Reduced padding
+                      }}
+                      size="small" // Smaller button
+                    >
+                      Submit Feedback
+                    </Button>
+                  </Box>
+                </form>
+              </CardContent>
+            </Card>
+          </Grid>
+          {/* Contact Us Card */}
+          <Grid item xs={12} md={4}>
+            <Card
+              sx={{
+                height: "100%",
+                borderRadius: "8px",
+                boxShadow: "0 1px 6px rgba(0,0,0,0.05)", // Lighter shadow
+              }}
+            >
+              <CardContent sx={{ p: { xs: 1.5, md: 2.5 } }}>
+                {" "}
+                {/* Reduced padding */}
+                <Box sx={{ display: "flex", alignItems: "center", mb: 1.5 }}>
+                  {" "}
+                  {/* Reduced margin */}
+                  <Avatar
+                    sx={{ bgcolor: "#e8f5e9", mr: 1.5, width: 32, height: 32 }}
+                  >
+                    {" "}
+                    {/* Smaller avatar */}
+                    <ContactSupportIcon
+                      sx={{ color: "#2e7d32", fontSize: "1.1rem" }}
+                    />{" "}
+                    {/* Smaller icon */}
+                  </Avatar>
+                  <Typography
+                    variant="h5"
+                    component="h2"
+                    sx={{
+                      fontSize: { xs: "1.1rem", md: "1.3rem" }, // Smaller font
+                      fontWeight: 600,
+                    }}
+                  >
+                    Contact Us
+                  </Typography>
+                </Box>
+                <Typography
+                  variant="body1"
+                  paragraph
+                  sx={{ fontSize: { xs: "0.85rem", md: "0.9rem" } }} // Smaller font
+                >
+                  Have questions or need assistance? Reach out to our team and
+                  we'll get back to you soon.
                 </Typography>
-              </Box>
-            </CardContent>
-          </Card>
+                <form onSubmit={handleContactSubmit}>
+                  <TextField
+                    fullWidth
+                    required
+                    label="Your Name"
+                    value={contactName}
+                    onChange={(e) => setContactName(e.target.value)}
+                    size="small" // Smaller text field
+                    sx={{ mb: 1.5 }} // Reduced margin
+                    InputProps={{
+                      style: {
+                        fontSize: isMobile ? "0.8rem" : "0.85rem", // Smaller font
+                      },
+                    }}
+                  />
+
+                  <TextField
+                    fullWidth
+                    required
+                    label="Email Address"
+                    type="email"
+                    value={contactEmail}
+                    onChange={(e) => setContactEmail(e.target.value)}
+                    size="small" // Smaller text field
+                    sx={{ mb: 1.5 }} // Reduced margin
+                    InputProps={{
+                      style: {
+                        fontSize: isMobile ? "0.8rem" : "0.85rem", // Smaller font
+                      },
+                    }}
+                  />
+
+                  <TextField
+                    fullWidth
+                    required
+                    label="Subject"
+                    value={contactSubject}
+                    onChange={(e) => setContactSubject(e.target.value)}
+                    size="small" // Smaller text field
+                    sx={{ mb: 1.5 }} // Reduced margin
+                    InputProps={{
+                      style: {
+                        fontSize: isMobile ? "0.8rem" : "0.85rem", // Smaller font
+                      },
+                    }}
+                  />
+
+                  <TextField
+                    fullWidth
+                    required
+                    multiline
+                    rows={isMobile ? 2 : 3} // Reduced rows
+                    label="Message"
+                    value={contactMessage}
+                    onChange={(e) => setContactMessage(e.target.value)}
+                    sx={{ mb: 2 }} // Reduced margin
+                    size="small" // Smaller text field
+                    InputProps={{
+                      style: {
+                        fontSize: isMobile ? "0.8rem" : "0.85rem", // Smaller font
+                      },
+                    }}
+                  />
+
+                  <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      disabled={!contactMessage}
+                      endIcon={<SendIcon fontSize="small" />} // Smaller icon
+                      sx={{
+                        borderRadius: "6px",
+                        fontSize: { xs: "0.75rem", md: "0.8rem" }, // Smaller font
+                        py: 0.75, // Reduced padding
+                        px: 1.5, // Reduced padding
+                      }}
+                      size="small" // Smaller button
+                    >
+                      Send Message
+                    </Button>
+                  </Box>
+                </form>
+                <Divider sx={{ my: 2 }} /> {/* Reduced margin */}
+                {/* Contact Info - Stacked on mobile */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: isMobile ? "flex-start" : "center",
+                    mb: 1, // Reduced margin
+                    flexDirection: isMobile ? "column" : "row",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      mb: isMobile ? 0.5 : 0, // Reduced margin
+                    }}
+                  >
+                    <EmailIcon
+                      fontSize="small"
+                      sx={{
+                        color: "primary.main",
+                        mr: 0.75,
+                        fontSize: "0.9rem",
+                      }} // Smaller icon and margin
+                    />
+                    <Typography
+                      variant="body2"
+                      sx={{ fontSize: { xs: "0.75rem", md: "0.8rem" } }} // Smaller font
+                    >
+                      <Link
+                        href="mailto:support@gradgear.edu"
+                        underline="hover"
+                      >
+                        support@gradgear.edu
+                      </Link>
+                    </Typography>
+                  </Box>
+
+                  {!isMobile && (
+                    <Divider orientation="vertical" flexItem sx={{ mx: 1.5 }} /> // Reduced margin
+                  )}
+
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <LocationOnIcon
+                      fontSize="small"
+                      sx={{
+                        color: "primary.main",
+                        mr: 0.75,
+                        fontSize: "0.9rem",
+                      }} // Smaller icon and margin
+                    />
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontSize: { xs: "0.75rem", md: "0.8rem" }, // Smaller font
+                        maxWidth: { xs: "85%", md: "100%" }, // Prevent overflow on mobile
+                      }}
+                    >
+                      Northeastern University, 360 Huntington Ave, Boston, MA
+                      02115
+                    </Typography>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
         </Grid>
-      </Grid>
 
-      {/* Notification */}
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-      >
-        <Alert
+        {/* Notification */}
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={6000}
           onClose={handleCloseSnackbar}
-          severity="success"
-          sx={{ width: "100%" }}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: isMobile ? "center" : "left",
+          }}
         >
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
-    </Box>
+          <Alert
+            onClose={handleCloseSnackbar}
+            severity="success"
+            sx={{ width: "100%" }}
+          >
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
+      </Box>
+    </>
   );
 }
 

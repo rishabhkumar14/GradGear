@@ -3,7 +3,7 @@ import Navbar from "./components/navbar.js";
 import Homepage from "./pages/homepage/Homepage.js";
 import Inventory from "./pages/resources/Inventory.js";
 import Assistant from "./pages/assistant/Assistant.js";
-import AboutUs from "./pages/about/AboutUs.js";
+import AboutUs from "./pages/about/AboutUsData.js";
 
 import {
   BrowserRouter as Router,
@@ -12,7 +12,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import Resources from "./pages/resources/Resources.js";
-import Contribute from "./pages/contribute/Contribute.js";
+import Contribute from "./pages/contribute/ContributeData.js";
 
 function App() {
   const [drawerOpen, setDrawerOpen] = useState(true); // State to track drawer status

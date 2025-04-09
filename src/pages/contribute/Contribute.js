@@ -15,7 +15,7 @@ export default function About(props) {
         transition: "margin-left 0.3s ease",
         marginLeft: `${props.drawerOpen ? 200 : 0}px`,
         width: `calc(100% - ${props.drawerOpen ? 200 : 0}px)`,
-        height: "200vh",
+        height: "120vh",
       }}
     >
       <br />

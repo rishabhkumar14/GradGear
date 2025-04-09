@@ -13,7 +13,7 @@ export default function Assistant(props) {
         transition: "margin-left 0.3s ease",
         marginLeft: `${props.drawerOpen ? 200 : 0}px`,
         width: `calc(100% - ${props.drawerOpen ? 200 : 0}px)`,
-        height: "200vh",
+        height: "110vh",
       }}
     >
       <br />

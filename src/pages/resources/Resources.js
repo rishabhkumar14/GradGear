@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   Card,
-  CardActionArea,
   Chip,
   InputAdornment,
   Paper,
@@ -13,6 +12,8 @@ import {
   IconButton,
   Avatar,
   Collapse,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
@@ -73,6 +74,9 @@ const chipColors = [
 ];
 
 function Resources(props) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   const [searchTerm, setSearchTerm] = React.useState("");
   const scrollContainerRefs = React.useRef({});
   const [visibleButtons, setVisibleButtons] = React.useState({});
@@ -83,10 +87,10 @@ function Resources(props) {
   React.useEffect(() => {
     const initialExpandedState = {};
     Object.keys(resourcesData).forEach((category) => {
-      initialExpandedState[category] = true; // All categories start expanded
+      initialExpandedState[category] = !isMobile; // Collapse categories on mobile by default
     });
     setExpandedCategories(initialExpandedState);
-  }, []);
+  }, [isMobile]);
 
   // Toggle category expansion
   const toggleCategory = (category) => {
@@ -148,7 +152,7 @@ function Resources(props) {
       ) {
         // Always show right button if more than 2 items
         if (filteredResources[category].length > 2) {
-          newVisibility[category] = { left: false, right: true };
+          newVisibility[category] = { left: false, right: !isMobile };
         } else {
           newVisibility[category] = checkScrollability(category);
         }
@@ -195,14 +199,14 @@ function Resources(props) {
 
       return () => clearTimeout(timer);
     }
-  }, [props.drawerOpen, componentMounted]);
+  }, [props.drawerOpen, componentMounted, isMobile]);
 
   // Handle scroll for a specific category
   const handleScroll = (category, direction) => {
     const container = scrollContainerRefs.current[category];
     if (container) {
-      // For 2.5 cards per view with width of 480px each
-      const scrollAmount = 480;
+      // Adjust scroll amount based on screen size
+      const scrollAmount = isMobile ? 300 : 480;
       if (direction === "left") {
         container.scrollLeft -= scrollAmount;
       } else {
@@ -242,33 +246,35 @@ function Resources(props) {
   // Function to render resource cards for a category
   const renderResourceCards = (categoryItems, category) => {
     // Always show right button if there are more than 2 items
-    const showRightButton = categoryItems.length > 2;
+    const showRightButton = categoryItems.length > 2 && !isMobile;
 
     return (
       <Box sx={{ position: "relative", mt: 2, mb: 2 }}>
-        {/* Left scroll button */}
-        <IconButton
-          size="small"
-          onClick={() => handleScroll(category, "left")}
-          sx={{
-            position: "absolute",
-            left: -30,
-            top: "50%",
-            transform: "translateY(-50%)",
-            zIndex: 2,
-            backgroundColor: "rgba(255, 255, 255, 0.7)",
-            color: "rgba(0, 0, 0, 0.6)",
-            "&:hover": {
-              backgroundColor: "rgba(255, 255, 255, 0.85)",
-              color: "rgba(0, 0, 0, 0.8)",
-            },
-            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-            display: visibleButtons[category]?.left ? "flex" : "none",
-            border: "1px solid rgba(0, 0, 0, 0.1)",
-          }}
-        >
-          <ChevronLeftIcon fontSize="small" />
-        </IconButton>
+        {/* Left scroll button - hidden on mobile */}
+        {!isMobile && (
+          <IconButton
+            size="small"
+            onClick={() => handleScroll(category, "left")}
+            sx={{
+              position: "absolute",
+              left: -30,
+              top: "50%",
+              transform: "translateY(-50%)",
+              zIndex: 2,
+              backgroundColor: "rgba(255, 255, 255, 0.7)",
+              color: "rgba(0, 0, 0, 0.6)",
+              "&:hover": {
+                backgroundColor: "rgba(255, 255, 255, 0.85)",
+                color: "rgba(0, 0, 0, 0.8)",
+              },
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              display: visibleButtons[category]?.left ? "flex" : "none",
+              border: "1px solid rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            <ChevronLeftIcon fontSize="small" />
+          </IconButton>
+        )}
 
         {/* Cards container */}
         <Box
@@ -276,21 +282,28 @@ function Resources(props) {
           onScroll={() => handleContainerScroll(category)}
           sx={{
             display: "flex",
-            overflowX: "hidden",
-            gap: 3,
+            overflowX: "auto", // Changed to auto for mobile swiping
+            gap: { xs: 2, sm: 3 },
             pb: 1,
             pt: 1,
             scrollBehavior: "smooth",
+            WebkitOverflowScrolling: "touch", // For smooth scrolling on iOS
+            msOverflowStyle: "none", // Hide scrollbar in Edge
+            scrollbarWidth: "none", // Hide scrollbar in Firefox
+            "&::-webkit-scrollbar": {
+              display: "none", // Hide scrollbar in Chrome/Safari
+            },
           }}
         >
           {categoryItems.map((item) => (
             <Card
               key={item.id}
               sx={{
-                width: 480, // Widened for 2.5 cards view
-                minWidth: 480, // Widened for 2.5 cards view
+                width: { xs: "85vw", sm: 480 }, // Responsive width
+                minWidth: { xs: "85vw", sm: 480 }, // Responsive min-width
                 minHeight: 180,
                 display: "flex",
+                flexDirection: { xs: "column", sm: "row" }, // Stack on mobile, side by side on desktop
                 transition: "transform 0.2s",
                 "&:hover": {
                   transform: "translateY(-4px)",
@@ -300,15 +313,16 @@ function Resources(props) {
                   item.navigateTo && item.navigateTo !== "#"
                     ? "pointer"
                     : "default",
-                borderRadius: "8px", // Match border radius with filter component
-                overflow: "hidden", // Ensure the border radius works with image
+                borderRadius: "8px",
+                overflow: "hidden",
               }}
               onClick={() => handleCardClick(item.navigateTo)}
             >
-              {/* Left side - Image */}
+              {/* Image - top on mobile, left on desktop */}
               <Box
                 sx={{
-                  width: 160,
+                  width: { xs: "100%", sm: 160 },
+                  height: { xs: 140, sm: "auto" },
                   flexShrink: 0,
                   display: "flex",
                   alignItems: "center",
@@ -323,18 +337,19 @@ function Resources(props) {
                     width: "100%",
                     height: "100%",
                     objectFit: "cover",
-                    objectPosition: "center", // Center the image
+                    objectPosition: "center",
                   }}
                 />
               </Box>
 
-              {/* Right side - Content */}
+              {/* Content - below image on mobile, right of image on desktop */}
               <Box
                 sx={{
                   display: "flex",
                   flexDirection: "column",
                   p: 2,
-                  width: "calc(100% - 160px)",
+                  width: { xs: "100%", sm: "calc(100% - 160px)" },
+                  flex: 1,
                 }}
               >
                 <Typography
@@ -355,7 +370,11 @@ function Resources(props) {
                   color="text.secondary"
                   sx={{
                     mb: 1,
-                    fontSize: "0.65rem", // Reduced from 0.7rem
+                    fontSize: "0.65rem",
+                    display: "-webkit-box",
+                    WebkitLineClamp: { xs: 2, sm: "unset" }, // Limit to 2 lines on mobile
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
                   }}
                 >
                   {item.description}
@@ -363,11 +382,19 @@ function Resources(props) {
 
                 {/* Chips */}
                 <Box
-                  sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mb: 1 }}
+                  sx={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 0.5,
+                    mb: 1,
+                    mt: { xs: "auto", sm: 0 }, // Push to bottom on mobile
+                  }}
                 >
                   {item.chips &&
                     item.chips.map((chip, index) => {
                       const chipColor = getChipColor(index);
+                      // Only show first 2 chips on mobile
+                      if (isMobile && index >= 2) return null;
                       return (
                         <Chip
                           key={index}
@@ -400,7 +427,7 @@ function Resources(props) {
                 </Box>
 
                 {/* Locations if any - truncated with tooltip */}
-                {item.locations && (
+                {item.locations && !isMobile && (
                   <Box sx={{ mb: 1 }}>
                     <Typography
                       variant="body2"
@@ -426,7 +453,7 @@ function Resources(props) {
                 {/* Action buttons */}
                 <Box
                   sx={{
-                    mt: "auto",
+                    mt: { xs: 1, sm: "auto" },
                     display: "flex",
                     justifyContent: "flex-end",
                     gap: 1,
@@ -441,10 +468,10 @@ function Resources(props) {
                       sx={{
                         py: 0.25,
                         minHeight: "24px",
-                        height: "24px", // Fixed height for consistency
+                        height: "24px",
                         fontSize: "0.7rem",
                         fontWeight: "medium",
-                        borderRadius: "6px", // Match border radius
+                        borderRadius: "6px",
                       }}
                     >
                       View Status
@@ -462,10 +489,10 @@ function Resources(props) {
                     sx={{
                       py: 0.25,
                       minHeight: "24px",
-                      height: "24px", // Fixed height for consistency
+                      height: "24px",
                       fontSize: "0.7rem",
                       fontWeight: "medium",
-                      borderRadius: "6px", // Match border radius
+                      borderRadius: "6px",
                     }}
                   >
                     Navigate
@@ -476,58 +503,41 @@ function Resources(props) {
           ))}
         </Box>
 
-        {/* Right scroll button - always show for categories with more than 2 items */}
-        <IconButton
-          size="small"
-          onClick={() => handleScroll(category, "right")}
-          sx={{
-            position: "absolute",
-            right: -30,
-            top: "50%",
-            transform: "translateY(-50%)",
-            zIndex: 2,
-            backgroundColor: "rgba(255, 255, 255, 0.7)",
-            color: "rgba(0, 0, 0, 0.6)",
-            "&:hover": {
-              backgroundColor: "rgba(255, 255, 255, 0.85)",
-              color: "rgba(0, 0, 0, 0.8)",
-            },
-            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-            display:
-              visibleButtons[category]?.right || showRightButton
-                ? "flex"
-                : "none",
-            border: "1px solid rgba(0, 0, 0, 0.1)",
-          }}
-        >
-          <ChevronRightIcon fontSize="small" />
-        </IconButton>
+        {/* Right scroll button - hidden on mobile */}
+        {!isMobile && (
+          <IconButton
+            size="small"
+            onClick={() => handleScroll(category, "right")}
+            sx={{
+              position: "absolute",
+              right: -30,
+              top: "50%",
+              transform: "translateY(-50%)",
+              zIndex: 2,
+              backgroundColor: "rgba(255, 255, 255, 0.7)",
+              color: "rgba(0, 0, 0, 0.6)",
+              "&:hover": {
+                backgroundColor: "rgba(255, 255, 255, 0.85)",
+                color: "rgba(0, 0, 0, 0.8)",
+              },
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              display:
+                visibleButtons[category]?.right || showRightButton
+                  ? "flex"
+                  : "none",
+              border: "1px solid rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            <ChevronRightIcon fontSize="small" />
+          </IconButton>
+        )}
       </Box>
     );
   };
 
   // Category colors for the headers
   const getCategoryColor = (category) => {
-    switch (category.toLowerCase()) {
-      case "spaces":
-        return "#616161"; // Grey
-      case "lockers":
-        return "#616161";
-      case "charger":
-        return "#616161";
-      case "laptop":
-        return "#616161";
-      case "accessories":
-        return "#616161";
-      case "camera":
-        return "#616161";
-      case "vending accessories":
-        return "#616161";
-      case "working with gpus":
-        return "#616161";
-      default:
-        return "#616161";
-    }
+    return "#616161"; // Grey for all categories
   };
 
   return (
@@ -536,40 +546,59 @@ function Resources(props) {
       sx={{
         backgroundColor: "#f0f0f9",
         flexGrow: 1,
-        p: 3,
+        p: { xs: 2, sm: 3 },
         transition: "margin-left 0.3s ease",
-        marginLeft: `${props.drawerOpen ? 200 : 0}px`,
-        width: `calc(100% - ${props.drawerOpen ? 200 : 0}px)`,
+        marginLeft: {
+          xs: 0,
+          sm: `${props.drawerOpen ? 200 : 0}px`,
+        },
+        width: {
+          xs: "100%",
+          sm: `calc(100% - ${props.drawerOpen ? 200 : 0}px)`,
+        },
         minHeight: "100vh",
       }}
     >
-      <Box sx={{ pt: 4, pb: 2 }}>
+      <Box sx={{ pt: { xs: 2, sm: 4 }, pb: { xs: 1, sm: 2 } }}>
         <Typography
           variant="h4"
           component="h1"
           gutterBottom
-          sx={{ fontSize: "1.8rem" }}
+          sx={{ fontSize: { xs: "1.5rem", sm: "1.8rem" } }}
         >
           Resources
         </Typography>
-        <Typography variant="body1" color="text.secondary" paragraph>
+        <Typography
+          variant="body1"
+          color="text.secondary"
+          paragraph
+          sx={{
+            fontSize: { xs: "0.9rem", sm: "1rem" },
+            display: { xs: "none", sm: "block" }, // Hide on mobile to save space
+          }}
+        >
           Browse resources by category. Access technology, spaces, and tools to
           support your work.
         </Typography>
 
-        {/* Search Bar - Reduced padding and height */}
+        {/* Search Bar - Responsive */}
         <Paper
           sx={{
-            p: 1, // Reduced padding
-            mb: 4,
+            p: { xs: 0.75, sm: 1 },
+            mb: { xs: 2, sm: 4 },
             display: "flex",
             alignItems: "center",
-            borderRadius: "8px", // Match border radius
+            borderRadius: "8px",
+            flexDirection: { xs: "column", sm: "row" }, // Stack on mobile
           }}
         >
           <TextField
             fullWidth
-            placeholder="Search resources by name, description, or tag..."
+            placeholder={
+              isMobile
+                ? "Search resources..."
+                : "Search resources by name, description, or tag..."
+            }
             variant="outlined"
             value={searchTerm}
             onChange={handleSearchChange}
@@ -581,31 +610,34 @@ function Resources(props) {
               ),
             }}
             sx={{
+              width: "100%",
               "& .MuiOutlinedInput-root": {
-                borderRadius: "6px", // Match border radius
-                // Reduce input field height
+                borderRadius: "6px",
                 "& fieldset": {
                   borderColor: "rgba(0, 0, 0, 0.15)",
                 },
               },
               "& .MuiInputBase-input": {
-                padding: "10px 14px", // Smaller input padding
+                padding: { xs: "8px 10px", sm: "10px 14px" },
               },
             }}
-            size="small" // Use small size for TextField
+            size="small"
           />
-          {/* Smaller filter button */}
+
+          {/* Filter button - full width on mobile */}
           <Button
             variant="contained"
             color="primary"
             size="small"
             startIcon={<FilterListIcon />}
             sx={{
-              ml: 2,
+              ml: { xs: 0, sm: 2 },
+              mt: { xs: 1, sm: 0 },
               py: 0.75,
               px: 1.5,
               minWidth: "auto",
-              borderRadius: "6px", // Match border radius
+              width: { xs: "100%", sm: "auto" }, // Full width on mobile
+              borderRadius: "6px",
             }}
           >
             Filter
@@ -616,18 +648,19 @@ function Resources(props) {
       {/* Display each category */}
       {Object.keys(filteredResources).length > 0 ? (
         Object.keys(filteredResources).map((category) => (
-          <Box key={category} sx={{ mb: 4 }}>
+          <Box key={category} sx={{ mb: { xs: 2, sm: 4 } }}>
             {/* Enhanced category header with icon and count */}
             <Box
               sx={{
                 display: "flex",
                 alignItems: "center",
-                mb: expandedCategories[category] ? 2 : 0,
+                mb: expandedCategories[category] ? { xs: 1, sm: 2 } : 0,
                 pb: 1,
                 borderBottom: `2px solid ${getCategoryColor(category)}`,
                 cursor: "pointer",
                 userSelect: "none",
-                // Remove hover effect
+                // Mobile padding adjustments
+                px: { xs: 0.5, sm: 0 },
               }}
               onClick={() => toggleCategory(category)}
             >
@@ -635,8 +668,8 @@ function Resources(props) {
                 sx={{
                   bgcolor: getCategoryColor(category),
                   mr: 1.5,
-                  width: 36,
-                  height: 36,
+                  width: { xs: 32, sm: 36 },
+                  height: { xs: 32, sm: 36 },
                 }}
               >
                 {getCategoryIcon(category)}
@@ -647,7 +680,7 @@ function Resources(props) {
                   component="h2"
                   sx={{
                     textTransform: "capitalize",
-                    fontSize: "1.4rem",
+                    fontSize: { xs: "1.1rem", sm: "1.4rem" },
                     fontWeight: 600,
                     color: getCategoryColor(category),
                     lineHeight: 1.2,
@@ -658,20 +691,20 @@ function Resources(props) {
                 <Typography
                   variant="body2"
                   color="text.secondary"
-                  sx={{ fontSize: "0.75rem" }}
+                  sx={{ fontSize: { xs: "0.7rem", sm: "0.75rem" } }}
                 >
                   {filteredResources[category].length} items available
                 </Typography>
               </Box>
-              {/* Expand/Collapse Icon - White color */}
+              {/* Expand/Collapse Icon */}
               <IconButton
                 size="small"
                 onClick={(e) => {
-                  e.stopPropagation(); // Prevent double toggling
+                  e.stopPropagation();
                   toggleCategory(category);
                 }}
                 sx={{
-                  color: getCategoryColor(category), // Use the same color as the category title
+                  color: getCategoryColor(category),
                 }}
               >
                 {expandedCategories[category] ? (
@@ -693,8 +726,14 @@ function Resources(props) {
           </Box>
         ))
       ) : (
-        <Paper sx={{ p: 4, borderRadius: "8px", textAlign: "center" }}>
-          <Typography variant="h6" color="text.secondary">
+        <Paper
+          sx={{ p: { xs: 2, sm: 4 }, borderRadius: "8px", textAlign: "center" }}
+        >
+          <Typography
+            variant="h6"
+            color="text.secondary"
+            sx={{ fontSize: { xs: "1rem", sm: "1.25rem" } }}
+          >
             No resources found matching your search. Try different keywords.
           </Typography>
         </Paper>

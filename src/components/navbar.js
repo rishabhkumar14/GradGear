@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import AppBar from "@mui/material/AppBar";
@@ -16,7 +16,7 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { Link } from "react-router-dom";
-import { Avatar } from "@mui/material";
+import { Avatar, useMediaQuery, useTheme } from "@mui/material";
 import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 import InfoIcon from "@mui/icons-material/Info";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
@@ -31,6 +31,12 @@ const drawerWidth = 240;
 
 export default function Navbar(props) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  // Determine variant based on screen size
+  const drawerVariant = isMobile ? "temporary" : "permanent";
   const currentPath = location.pathname;
 
   // Navigation items array
@@ -49,12 +55,191 @@ export default function Navbar(props) {
     );
   };
 
+  // Handle logo click
+  const handleLogoClick = (e) => {
+    e.preventDefault();
+    navigate("/homepage");
+    if (isMobile) {
+      props.toggleDrawer();
+    }
+  };
+
+  const drawer = (
+    <>
+      <Toolbar />
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          backgroundColor: "#363740",
+        }}
+      >
+        {/* Main navigation items */}
+        <Box>
+          <List sx={{ py: 0 }}>
+            {navItems.map((item) => {
+              const active = isActive(item.path);
+              return (
+                <ListItem
+                  key={item.text}
+                  disablePadding
+                  className="nav-item"
+                  sx={{
+                    display: "block",
+                    my: 0.5,
+                  }}
+                  onClick={isMobile ? props.toggleDrawer : undefined}
+                >
+                  <Link
+                    to={item.path}
+                    style={{
+                      textDecoration: "none",
+                      width: "100%",
+                      display: "block",
+                    }}
+                  >
+                    <ListItemButton
+                      sx={{
+                        pl: 3,
+                        minHeight: { xs: 48, sm: 54 },
+                        py: { xs: 1, sm: 1.5 },
+                        backgroundColor: active
+                          ? "rgba(255, 255, 255, 0.15)"
+                          : "transparent",
+                        "&:hover": {
+                          backgroundColor: active
+                            ? "rgba(255, 255, 255, 0.2)"
+                            : "rgba(255, 255, 255, 0.1)",
+                        },
+                        borderLeft: active
+                          ? "4px solid #ffffff"
+                          : "4px solid transparent",
+                        position: "relative",
+                        overflow: "hidden",
+                        textShadow: active ? "0 0 1px rgba(0,0,0,0.5)" : "none",
+                      }}
+                    >
+                      <ListItemIcon
+                        sx={{
+                          color: active ? "#ffffff" : "#eeeeee",
+                          minWidth: { xs: 35, sm: 40 },
+                          fontSize: { xs: "1.1rem", sm: "1.25rem" },
+                        }}
+                      >
+                        {item.icon}
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={
+                          <Typography
+                            variant="body1"
+                            sx={{
+                              color: active ? "#ffffff" : "#eeeeee",
+                              fontWeight: active ? 600 : 400,
+                              fontSize: { xs: "0.85rem", sm: "0.95rem" },
+                              position: "relative",
+                              zIndex: 2,
+                            }}
+                          >
+                            {item.text}
+                          </Typography>
+                        }
+                      />
+                    </ListItemButton>
+                  </Link>
+                </ListItem>
+              );
+            })}
+          </List>
+          <Divider sx={{ backgroundColor: "rgba(255,255,255,0.1)", my: 1 }} />
+        </Box>
+
+        {/* Bottom contribute button */}
+        <Box sx={{ mt: "auto" }}>
+          <List sx={{ py: 0 }}>
+            <ListItem
+              disablePadding
+              className="nav-item"
+              sx={{
+                display: "block",
+                mb: 2,
+                mt: 0.5,
+              }}
+              onClick={isMobile ? props.toggleDrawer : undefined}
+            >
+              <Link
+                to="/contribute"
+                style={{
+                  textDecoration: "none",
+                  width: "100%",
+                  display: "block",
+                }}
+              >
+                <ListItemButton
+                  sx={{
+                    pl: 3,
+                    minHeight: { xs: 48, sm: 54 },
+                    py: { xs: 1, sm: 1.5 },
+                    backgroundColor: isActive("/contribute")
+                      ? "rgba(255, 255, 255, 0.15)"
+                      : "transparent",
+                    "&:hover": {
+                      backgroundColor: isActive("/contribute")
+                        ? "rgba(255, 255, 255, 0.2)"
+                        : "rgba(255, 255, 255, 0.1)",
+                    },
+                    borderLeft: isActive("/contribute")
+                      ? "4px solid #ffffff"
+                      : "4px solid transparent",
+                    position: "relative",
+                    overflow: "hidden",
+                  }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      color: isActive("/contribute") ? "#ffffff" : "#eeeeee",
+                      minWidth: { xs: 35, sm: 40 },
+                    }}
+                  >
+                    <VolunteerActivismIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          color: isActive("/contribute")
+                            ? "#ffffff"
+                            : "#eeeeee",
+                          fontWeight: isActive("/contribute") ? 600 : 400,
+                          fontSize: { xs: "0.85rem", sm: "0.95rem" },
+                          position: "relative",
+                          zIndex: 2,
+                        }}
+                      >
+                        Contribute
+                      </Typography>
+                    }
+                  />
+                </ListItemButton>
+              </Link>
+            </ListItem>
+          </List>
+        </Box>
+      </Box>
+    </>
+  );
+
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar
         position="fixed"
-        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, bgcolor: "#363740" }}
+        sx={{
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          bgcolor: "#363740",
+          width: "100%",
+        }}
       >
         <Toolbar>
           <IconButton
@@ -64,208 +249,80 @@ export default function Navbar(props) {
             edge="start"
             sx={{ mr: 2 }}
           >
-            {props.drawerOpen ? <ChevronLeftIcon /> : <MenuIcon />}
+            {props.drawerOpen && !isMobile ? <ChevronLeftIcon /> : <MenuIcon />}
           </IconButton>
-          <Link to="/" style={{ textDecoration: "none" }}>
+
+          <Box
+            onClick={handleLogoClick}
+            sx={{
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
             <img
               src={logo}
-              alt="RetailHub Logo"
-              style={{ height: 45, paddingTop: "10px" }}
+              alt="GradGear Logo"
+              style={{
+                height: isMobile ? 35 : 45,
+                marginTop: isMobile ? 5 : 10,
+              }}
             />
-          </Link>
+          </Box>
 
           <Avatar
-            alt="Rishabh Kumar"
+            alt="User"
             src={rishabhAvtar}
             sx={{
-              width: 40,
-              height: 40,
+              width: { xs: 36, sm: 40 },
+              height: { xs: 36, sm: 40 },
               marginLeft: "auto",
-              marginRight: "10px",
+              marginRight: { xs: 0, sm: "10px" },
             }}
           />
         </Toolbar>
       </AppBar>
-      <Drawer
-        variant="permanent"
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          [`& .MuiDrawer-paper`]: {
-            width: drawerWidth,
-            boxSizing: "border-box",
-            backgroundColor: "#363740",
-            transition: "transform 0.3s ease-in-out",
-            transform: props.drawerOpen
-              ? "none"
-              : `translateX(-${drawerWidth}px)`,
-          },
-        }}
-        open={props.drawerOpen}
-      >
-        <Toolbar />
-        <Box
+
+      {/* Mobile: Temporary drawer that closes on selection */}
+      {isMobile ? (
+        <Drawer
+          variant={drawerVariant}
+          open={props.drawerOpen}
+          onClose={props.toggleDrawer}
           sx={{
-            display: "flex",
-            flexDirection: "column",
-            height: "100%",
-            backgroundColor: "#363740",
+            width: drawerWidth,
+            flexShrink: 0,
+            [`& .MuiDrawer-paper`]: {
+              width: drawerWidth,
+              boxSizing: "border-box",
+              backgroundColor: "#363740",
+            },
           }}
         >
-          {/* Main navigation items */}
-          <Box>
-            <List sx={{ py: 0 }}>
-              {navItems.map((item) => {
-                const active = isActive(item.path);
-                return (
-                  <ListItem
-                    key={item.text}
-                    disablePadding
-                    className="nav-item"
-                    sx={{
-                      display: "block",
-                      my: 0.5, // Add margin between menu items
-                    }}
-                  >
-                    <Link
-                      to={item.path}
-                      style={{
-                        textDecoration: "none",
-                        width: "100%",
-                        display: "block",
-                      }}
-                    >
-                      <ListItemButton
-                        sx={{
-                          pl: 3, // Extra left padding
-                          minHeight: 54, // Increased height here
-                          py: 1.5, // Additional vertical padding
-                          backgroundColor: active
-                            ? "rgba(255, 255, 255, 0.15)"
-                            : "transparent",
-                          "&:hover": {
-                            backgroundColor: active
-                              ? "rgba(255, 255, 255, 0.2)"
-                              : "rgba(255, 255, 255, 0.1)",
-                          },
-                          // Add left highlight for active item
-                          borderLeft: active
-                            ? "4px solid #ffffff"
-                            : "4px solid transparent",
-                          position: "relative",
-                          overflow: "hidden",
-                          textShadow: active
-                            ? "0 0 1px rgba(0,0,0,0.5)"
-                            : "none",
-                        }}
-                      >
-                        <ListItemIcon
-                          sx={{
-                            color: active ? "#ffffff" : "#eeeeee",
-                            minWidth: 40,
-                          }}
-                        >
-                          {item.icon}
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={
-                            <Typography
-                              variant="body1"
-                              sx={{
-                                color: active ? "#ffffff" : "#eeeeee",
-                                fontWeight: active ? 600 : 400,
-                                fontSize: "0.95rem", // Slightly larger font
-                                position: "relative",
-                                zIndex: 2, // Ensure text is above any background
-                              }}
-                            >
-                              {item.text}
-                            </Typography>
-                          }
-                        />
-                      </ListItemButton>
-                    </Link>
-                  </ListItem>
-                );
-              })}
-            </List>
-            <Divider sx={{ backgroundColor: "rgba(255,255,255,0.1)", my: 1 }} />
-          </Box>
-
-          {/* Bottom contribute button */}
-          <Box sx={{ mt: "auto" }}>
-            <List sx={{ py: 0 }}>
-              <ListItem
-                disablePadding
-                className="nav-item"
-                sx={{
-                  display: "block",
-                  mb: 2, // Add bottom margin
-                  mt: 0.5, // Add top margin
-                }}
-              >
-                <Link
-                  to="/contribute"
-                  style={{
-                    textDecoration: "none",
-                    width: "100%",
-                    display: "block",
-                  }}
-                >
-                  <ListItemButton
-                    sx={{
-                      pl: 3, // Extra left padding
-                      minHeight: 54, // Increased height here
-                      py: 1.5, // Additional vertical padding
-                      backgroundColor: isActive("/contribute")
-                        ? "rgba(255, 255, 255, 0.15)"
-                        : "transparent",
-                      "&:hover": {
-                        backgroundColor: isActive("/contribute")
-                          ? "rgba(255, 255, 255, 0.2)"
-                          : "rgba(255, 255, 255, 0.1)",
-                      },
-                      // Add left highlight for active item
-                      borderLeft: isActive("/contribute")
-                        ? "4px solid #ffffff"
-                        : "4px solid transparent",
-                      position: "relative",
-                      overflow: "hidden",
-                    }}
-                  >
-                    <ListItemIcon
-                      sx={{
-                        color: isActive("/contribute") ? "#ffffff" : "#eeeeee",
-                        minWidth: 40,
-                      }}
-                    >
-                      <VolunteerActivismIcon />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={
-                        <Typography
-                          variant="body1"
-                          sx={{
-                            color: isActive("/contribute")
-                              ? "#ffffff"
-                              : "#eeeeee",
-                            fontWeight: isActive("/contribute") ? 600 : 400,
-                            fontSize: "0.95rem", // Slightly larger font
-                            position: "relative",
-                            zIndex: 2, // Ensure text is above any background
-                          }}
-                        >
-                          Contribute
-                        </Typography>
-                      }
-                    />
-                  </ListItemButton>
-                </Link>
-              </ListItem>
-            </List>
-          </Box>
-        </Box>
-      </Drawer>
+          {drawer}
+        </Drawer>
+      ) : (
+        // Desktop: Permanent drawer that slides
+        <Drawer
+          variant={drawerVariant}
+          sx={{
+            width: drawerWidth,
+            flexShrink: 0,
+            [`& .MuiDrawer-paper`]: {
+              width: drawerWidth,
+              boxSizing: "border-box",
+              backgroundColor: "#363740",
+              transition: "transform 0.3s ease-in-out",
+              transform: props.drawerOpen
+                ? "none"
+                : `translateX(-${drawerWidth}px)`,
+            },
+          }}
+          open={props.drawerOpen}
+        >
+          {drawer}
+        </Drawer>
+      )}
     </Box>
   );
 }

@@ -9,12 +9,15 @@ import {
   Avatar,
   List,
   ListItem,
-  ListItemText,
   ListItemAvatar,
   Divider,
   CircularProgress,
   Button,
   Chip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import SearchIcon from "@mui/icons-material/Search";
@@ -23,7 +26,6 @@ import PersonIcon from "@mui/icons-material/Person";
 import MicIcon from "@mui/icons-material/Mic";
 import KeyboardVoiceIcon from "@mui/icons-material/KeyboardVoice";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import laptopImg from "../../assets/laptop.png";
 
 // Example suggestions for the assistant
 const suggestions = [
@@ -33,31 +35,6 @@ const suggestions = [
   "What cameras are available for loan?",
   "How do I access GPU computing resources?",
 ];
-
-// Example response data
-const exampleResponses = {
-  "Where can I find a laptop power bank?": {
-    text: "Laptop power banks are available at the following locations:\n\n• International Village Basement\n• Second floor of EXP next to the student printers\n• Third floor of EXP next to the student printers\n\nYou can borrow them for up to 8 hours and they're compatible with most major laptop brands.",
-    relatedResource: {
-      id: 3,
-      name: "Laptop power bank",
-      description: "Available at International Village Basement and EXP floors",
-      image: laptopImg,
-      navigateTo:
-        "https://service.northeastern.edu/tech?id=kb_article&sysparm_article=KB000018991",
-    },
-  },
-  "How do I book a study room?": {
-    text: "You can reserve study rooms in Snell Library through the Snell Booking system. Rooms are available for 3-hour blocks and include multimedia support and whiteboard facilities. Perfect for group projects and study sessions.",
-    relatedResource: {
-      id: 1,
-      name: "Snell Booking",
-      description: "Reserve study rooms in Snell Library",
-      image: laptopImg,
-      navigateTo: "https://northeastern.libcal.com/reserve/",
-    },
-  },
-};
 
 function AIAssistant(props) {
   const [inputValue, setInputValue] = React.useState("");
@@ -70,16 +47,11 @@ function AIAssistant(props) {
     },
   ]);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [isHelpDialogOpen, setIsHelpDialogOpen] = React.useState(false); // State for Help dialog
+  const [isErrorDialogOpen, setIsErrorDialogOpen] = React.useState(false); // State for error dialog
+  const [errorDialogMessage, setErrorDialogMessage] = React.useState(""); // State for error message
   const messagesEndRef = React.useRef(null);
   const [isListening, setIsListening] = React.useState(false);
-
-  // const scrollToBottom = () => {
-  //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  // };
-
-  // React.useEffect(() => {
-  //   scrollToBottom();
-  // }, [conversation]);
 
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
@@ -98,28 +70,42 @@ function AIAssistant(props) {
     setInputValue("");
     setIsLoading(true);
 
-    // Simulate API delay
-    setTimeout(() => {
-      let responseContent =
-        "I'm not sure about that. Could you please ask me something about the available resources?";
-      let relatedResource = null;
+    try {
+      // Simulate chatbot thinking
+      await new Promise((resolve) => setTimeout(resolve, 1500)); // 1.5-second delay
 
-      // Check if we have a predefined answer
-      if (exampleResponses[userMessage.content]) {
-        responseContent = exampleResponses[userMessage.content].text;
-        relatedResource = exampleResponses[userMessage.content].relatedResource;
-      }
+      // Send query to backend
+      const response = await fetch("http://localhost:5000/api/query", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query: inputValue }),
+      });
+
+      const data = await response.json();
 
       const assistantResponse = {
         role: "assistant",
-        content: responseContent,
+        content: data.response, // HTML response from the backend
         timestamp: new Date(),
-        relatedResource,
+        relatedResources: data.relatedResources || [],
       };
 
       setConversation((prev) => [...prev, assistantResponse]);
+    } catch (error) {
+      console.error("Error fetching response:", error);
+      setConversation((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: "Sorry, something went wrong. Please try again later.",
+          timestamp: new Date(),
+        },
+      ]);
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const handleKeyDown = (event) => {
@@ -131,49 +117,64 @@ function AIAssistant(props) {
 
   const handleSuggestionClick = (suggestion) => {
     setInputValue(suggestion);
-    setTimeout(() => {
-      const userMessage = {
-        role: "user",
-        content: suggestion,
-        timestamp: new Date(),
-      };
-
-      setConversation((prev) => [...prev, userMessage]);
-      setIsLoading(true);
-
-      // Simulate API delay
-      setTimeout(() => {
-        let responseContent =
-          "I'm not sure about that. Could you please ask me something about the available resources?";
-        let relatedResource = null;
-
-        // Check if we have a predefined answer
-        if (exampleResponses[suggestion]) {
-          responseContent = exampleResponses[suggestion].text;
-          relatedResource = exampleResponses[suggestion].relatedResource;
-        }
-
-        const assistantResponse = {
-          role: "assistant",
-          content: responseContent,
-          timestamp: new Date(),
-          relatedResource,
-        };
-
-        setConversation((prev) => [...prev, assistantResponse]);
-        setIsLoading(false);
-      }, 1500);
-    }, 300);
+    handleSendMessage();
   };
 
   const toggleListening = () => {
-    setIsListening(!isListening);
+    // Check if the browser supports SpeechRecognition
+    if (!("webkitSpeechRecognition" in window || "SpeechRecognition" in window)) {
+      alert("Voice recognition is only supported on Google Chrome. Please use Chrome to access this feature.");
+      return;
+    }
+
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+
+    recognition.lang = "en-US"; // Set the language
+    recognition.interimResults = false; // Only return final results
+    recognition.maxAlternatives = 1; // Return only one alternative
+
     if (!isListening) {
-      // Simulate a voice input
-      setTimeout(() => {
-        setInputValue("Where can I find a laptop power bank?");
+      console.log("Starting speech recognition...");
+      setIsListening(true);
+
+      recognition.start();
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript; // Get the transcribed text
+        console.log("Speech recognized:", transcript); // Debugging log
+        setInputValue(transcript); // Set the transcribed text in the input box
+        setIsListening(false); // Stop listening after capturing the speech
+      };
+
+      recognition.onerror = (event) => {
+        console.error("Speech recognition error:", event.error); // Debugging log
+        if (event.error === "network") {
+          setErrorDialogMessage(
+            "Network error: Please check your internet connection and try using Internet Explorer, Microsoft Edge, or Google Chrome."
+          );
+          setIsErrorDialogOpen(true); // Open the error dialog
+        } else if (event.error === "not-allowed") {
+          setErrorDialogMessage(
+            "Microphone access is blocked. Please allow microphone access in your browser settings."
+          );
+          setIsErrorDialogOpen(true); // Open the error dialog
+        } else {
+          setErrorDialogMessage("An error occurred during speech recognition. Please try again.");
+          setIsErrorDialogOpen(true); // Open the error dialog
+        }
         setIsListening(false);
-      }, 2000);
+      };
+
+      recognition.onend = () => {
+        console.log("Speech recognition ended."); // Debugging log
+        setIsListening(false); // Ensure the listening state is reset
+      };
+    } else {
+      console.log("Stopping speech recognition...");
+      setIsListening(false);
+      recognition.stop(); // Stop the recognition process
     }
   };
 
@@ -181,20 +182,24 @@ function AIAssistant(props) {
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
-  // Format multiline text to preserve newlines
-  const formatMessageText = (text) => {
-    return text.split("\n").map((line, i) => (
-      <React.Fragment key={i}>
-        {line}
-        {i < text.split("\n").length - 1 && <br />}
-      </React.Fragment>
-    ));
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleResourceClick = (url) => {
-    if (url && url !== "#") {
-      window.open(url, "_blank");
-    }
+  React.useEffect(() => {
+    scrollToBottom();
+  }, [conversation]);
+
+  const handleHelpClick = () => {
+    setIsHelpDialogOpen(true); // Open the Help dialog
+  };
+
+  const handleHelpDialogClose = () => {
+    setIsHelpDialogOpen(false); // Close the Help dialog
+  };
+
+  const handleErrorDialogClose = () => {
+    setIsErrorDialogOpen(false); // Close the error dialog
   };
 
   return (
@@ -232,11 +237,43 @@ function AIAssistant(props) {
           sx={{
             borderRadius: "6px",
           }}
+          onClick={handleHelpClick} // Open Help dialog on click
         >
           Help
         </Button>
       </Box>
 
+      {/* Help Dialog */}
+      <Dialog open={isHelpDialogOpen} onClose={handleHelpDialogClose}>
+        <DialogTitle>Help</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1">
+            This chatbot helps you navigate resources available on our platform.
+            If the resource you're looking for is not available, feel free to
+            contribute when you find information about the resource.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleHelpDialogClose} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Error Dialog */}
+      <Dialog open={isErrorDialogOpen} onClose={handleErrorDialogClose}>
+        <DialogTitle>Error</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1">{errorDialogMessage}</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleErrorDialogClose} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Chat history and input box */}
       <Paper
         sx={{
           flexGrow: 1,
@@ -300,9 +337,84 @@ function AIAssistant(props) {
                         boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
                       }}
                     >
-                      <Typography variant="body1">
-                        {formatMessageText(message.content)}
-                      </Typography>
+                      {/* Render structured content */}
+                      {message.role === "assistant" &&
+                      message.relatedResources &&
+                      message.relatedResources.length > 0 ? (
+                        <Box>
+                          <Typography
+                            variant="body1"
+                            sx={{ fontWeight: "bold", mb: 1 }}
+                          >
+                            Here are the resources we found in the{" "}
+                            <strong>
+                              {message.relatedResources[0]?.category ||
+                                "relevant"}
+                            </strong>{" "}
+                            category for your query:
+                          </Typography>
+                          <List>
+                            {message.relatedResources.map((resource, index) => (
+                              <ListItem
+                                key={index}
+                                sx={{
+                                  display: "flex",
+                                  flexDirection: "row",
+                                  alignItems: "center",
+                                  mb: 1,
+                                }}
+                              >
+                                <Typography
+                                  variant="body1"
+                                  sx={{ fontWeight: "bold", mr: 1 }}
+                                >
+                                  {index + 1}. {resource.name}
+                                </Typography>
+                                {resource.navigateTo &&
+                                resource.navigateTo !== "#" ? (
+                                  <Typography
+                                    variant="body2"
+                                    color="primary"
+                                    component="a"
+                                    href={resource.navigateTo}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    sx={{ textDecoration: "none" }}
+                                  >
+                                    Book here
+                                  </Typography>
+                                ) : (
+                                  <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                  >
+                                    This resource is not available for booking
+                                    through our system.
+                                  </Typography>
+                                )}
+                              </ListItem>
+                            ))}
+                          </List>
+                        </Box>
+                      ) : (
+                        <Typography variant="body1">
+                          {message.content.includes("[Contribute page]") ? (
+                            <>
+                              Sorry, we couldn't find any resources matching your query. If you'd like to contribute resources to our system, please visit the{" "}
+                              <a
+                                href="http://localhost:3000/contribute"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{ color: "#1976d2", textDecoration: "none", fontWeight: "bold" }}
+                              >
+                                Contribute page
+                              </a>.
+                            </>
+                          ) : (
+                            <span dangerouslySetInnerHTML={{ __html: message.content }} />
+                          )}
+                        </Typography>
+                      )}
                     </Paper>
 
                     {/* Timestamp */}
@@ -317,69 +429,6 @@ function AIAssistant(props) {
                     >
                       {formatTimestamp(message.timestamp)}
                     </Typography>
-
-                    {/* Related resource card */}
-                    {message.relatedResource && (
-                      <Paper
-                        sx={{
-                          mt: 2,
-                          p: 1.5,
-                          borderRadius: "8px",
-                          display: "flex",
-                          cursor: "pointer",
-                          transition: "transform 0.2s",
-                          "&:hover": {
-                            transform: "translateY(-2px)",
-                            boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-                          },
-                        }}
-                        onClick={() =>
-                          handleResourceClick(
-                            message.relatedResource.navigateTo
-                          )
-                        }
-                      >
-                        <Box
-                          sx={{ width: 80, height: 80, flexShrink: 0, mr: 2 }}
-                        >
-                          <img
-                            src={message.relatedResource.image}
-                            alt={message.relatedResource.name}
-                            style={{
-                              width: "100%",
-                              height: "100%",
-                              objectFit: "cover",
-                              borderRadius: "4px",
-                            }}
-                          />
-                        </Box>
-                        <Box sx={{ flexGrow: 1 }}>
-                          <Typography variant="subtitle1" fontWeight="medium">
-                            {message.relatedResource.name}
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            color="text.secondary"
-                            sx={{ mb: 1 }}
-                          >
-                            {message.relatedResource.description}
-                          </Typography>
-                          <Button
-                            variant="contained"
-                            color="primary"
-                            size="small"
-                            sx={{
-                              py: 0.25,
-                              minHeight: "24px",
-                              fontSize: "0.7rem",
-                              borderRadius: "6px",
-                            }}
-                          >
-                            View Resource
-                          </Button>
-                        </Box>
-                      </Paper>
-                    )}
                   </Box>
                 </ListItem>
                 {index < conversation.length - 1 && (

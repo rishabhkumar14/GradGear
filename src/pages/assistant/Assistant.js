@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Box, Grid } from "@mui/material";
-import AIAssistant from "./AIAssistant.js";
+import AIAssistant from './AIAssistant.js';
 
 export default function Assistant(props) {
   return (

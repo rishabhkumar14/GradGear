@@ -26,6 +26,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import MicIcon from "@mui/icons-material/Mic";
 import KeyboardVoiceIcon from "@mui/icons-material/KeyboardVoice";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import ReactMarkdown from 'react-markdown';
 
 // Example suggestions for the assistant
 const suggestions = [
@@ -85,9 +86,16 @@ function AIAssistant(props) {
 
       const data = await response.json();
 
+      // --- ADD THIS LOGGING ---
+      console.log("--- FRONTEND Received Data ---");
+      console.log("Raw data object:", JSON.stringify(data, null, 2));
+      console.log("data.response:", data.response);
+      console.log("----------------------------");
+      // --- END LOGGING ---
+
       const assistantResponse = {
         role: "assistant",
-        content: data.response, // HTML response from the backend
+        content: data.response || (data.success ? "" : data.error || "Error processing response."),
         timestamp: new Date(),
         relatedResources: data.relatedResources || [],
       };
@@ -329,90 +337,49 @@ function AIAssistant(props) {
                     }}
                   >
                     <Paper
+                      elevation={1}
                       sx={{
-                        p: 2,
-                        bgcolor:
-                          message.role === "assistant" ? "#ffffff" : "#e3f2fd",
-                        borderRadius: "12px",
-                        boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+                        padding: 1.5,
+                        maxWidth: "80%",
+                        wordWrap: "break-word",
+                        backgroundColor: message.role === "user" ? "#e0f7fa" : "#f0f4c4", // Different background colors for user and AI
                       }}
                     >
-                      {/* Render structured content */}
-                      {message.role === "assistant" &&
-                      message.relatedResources &&
-                      message.relatedResources.length > 0 ? (
-                        <Box>
-                          <Typography
-                            variant="body1"
-                            sx={{ fontWeight: "bold", mb: 1 }}
-                          >
-                            Here are the resources we found in the{" "}
-                            <strong>
-                              {message.relatedResources[0]?.category ||
-                                "relevant"}
-                            </strong>{" "}
-                            category for your query:
-                          </Typography>
-                          <List>
-                            {message.relatedResources.map((resource, index) => (
-                              <ListItem
-                                key={index}
-                                sx={{
-                                  display: "flex",
-                                  flexDirection: "row",
-                                  alignItems: "center",
-                                  mb: 1,
-                                }}
-                              >
-                                <Typography
-                                  variant="body1"
-                                  sx={{ fontWeight: "bold", mr: 1 }}
-                                >
-                                  {index + 1}. {resource.name}
-                                </Typography>
-                                {resource.navigateTo &&
-                                resource.navigateTo !== "#" ? (
-                                  <Typography
-                                    variant="body2"
-                                    color="primary"
-                                    component="a"
-                                    href={resource.navigateTo}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    sx={{ textDecoration: "none" }}
-                                  >
-                                    Book here
-                                  </Typography>
-                                ) : (
-                                  <Typography
-                                    variant="body2"
-                                    color="text.secondary"
-                                  >
-                                    This resource is not available for booking
-                                    through our system.
-                                  </Typography>
-                                )}
-                              </ListItem>
-                            ))}
-                          </List>
+                      {message.role === 'assistant' ? (
+                        <Box
+                          sx={{
+                            // --- START: Refined Markdown Styles ---
+                            // Ensure paragraphs have some spacing
+                            '& p': { my: 0.5 },
+                            // List styling
+                            '& ul': { pl: 2.5, my: 0.5 },
+                            '& li': { mb: 0.5 },
+                            // Explicit and forceful link styling
+                            '& a, & a:link, & a:visited': { // Target different link states
+                                color: 'primary.main', // Use theme color
+                                textDecoration: 'underline !important', // Force underline initially
+                                cursor: 'pointer !important', // Force pointer cursor
+                                fontWeight: 500,
+                                '&:hover': { // Hover effect
+                                    opacity: 0.8,
+                                    textDecoration: 'none !important', // Optional: remove underline on hover
+                                },
+                            },
+                            // Bold text styling
+                            '& strong': {
+                                fontWeight: 'bold',
+                            },
+                            // --- END: Refined Markdown Styles ---
+                          }}
+                        >
+                           <ReactMarkdown>
+                             {message.content || ""}
+                           </ReactMarkdown>
                         </Box>
                       ) : (
-                        <Typography variant="body1">
-                          {message.content.includes("[Contribute page]") ? (
-                            <>
-                              Sorry, we couldn't find any resources matching your query. If you'd like to contribute resources to our system, please visit the{" "}
-                              <a
-                                href="http://localhost:3000/contribute"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                style={{ color: "#1976d2", textDecoration: "none", fontWeight: "bold" }}
-                              >
-                                Contribute page
-                              </a>.
-                            </>
-                          ) : (
-                            <span dangerouslySetInnerHTML={{ __html: message.content }} />
-                          )}
+                        // User message rendering
+                        <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                          {message.content}
                         </Typography>
                       )}
                     </Paper>

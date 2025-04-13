@@ -94,11 +94,11 @@ app.post("/api/query", async (req, res) => {
       const powerBankResources = findResourcesByCategory("Laptop power bank");
       if (powerBankResources && powerBankResources.length > 0) {
         let responseText = "Here are the laptop power banks available:\n\n";
-        powerBankResources.forEach((resource, index) => {
+        powerBankResources.forEach((resource) => {
            if (resource.navigateTo && resource.navigateTo !== "#") {
-             responseText += `${index + 1}. **${resource.name}** - [Book here](${resource.navigateTo})\n`;
+             responseText += `* **${resource.name}** - [Book here](${resource.navigateTo})\n`;
            } else {
-             responseText += `${index + 1}. **${resource.name}** - This resource is not available for booking through our system.\n`;
+             responseText += `* **${resource.name}** - This resource is not available for booking through our system.\n`;
            }
         });
         console.log("--- BACKEND Sending Response (Laptop Power Bank Check) ---");
@@ -112,13 +112,16 @@ app.post("/api/query", async (req, res) => {
          const powerBankResources = findResourcesByCategory("Laptop power bank");
          if (powerBankResources && powerBankResources.length > 0) {
             let responseText = "Here are the laptop power banks available:\n\n";
-            powerBankResources.forEach((resource, index) => {
+            powerBankResources.forEach((resource) => {
                if (resource.navigateTo && resource.navigateTo !== "#") {
-                 responseText += `${index + 1}. **${resource.name}** - [Book here](${resource.navigateTo})\n`;
+                 responseText += `* **${resource.name}** - [Book here](${resource.navigateTo})\n`;
                } else {
-                 responseText += `${index + 1}. **${resource.name}** - This resource is not available for booking through our system.\n`;
+                 responseText += `* **${resource.name}** - This resource is not available for booking through our system.\n`;
                }
             });
+            console.log("--- BACKEND Sending Response (Simple Power Bank Check) ---");
+            console.log("Raw responseText:", responseText);
+            console.log("-------------------------------------------------");
             return res.json({ success: true, response: responseText, relatedResources: powerBankResources });
          }
     }
@@ -126,11 +129,11 @@ app.post("/api/query", async (req, res) => {
       const cameraResources = findResourcesByCategory("Camera");
       if (cameraResources && cameraResources.length > 0) {
          let responseText = "Here are the cameras available for loan:\n\n";
-         cameraResources.forEach((resource, index) => {
+         cameraResources.forEach((resource) => {
             if (resource.navigateTo && resource.navigateTo !== "#") {
-              responseText += `${index + 1}. **${resource.name}** - [Book here](${resource.navigateTo})\n`;
+              responseText += `* **${resource.name}** - [Book here](${resource.navigateTo})\n`;
             } else {
-              responseText += `${index + 1}. **${resource.name}** - This resource is not available for booking through our system.\n`;
+              responseText += `* **${resource.name}** - This resource is not available for booking through our system.\n`;
             }
          });
          return res.json({ success: true, response: responseText, relatedResources: cameraResources });
@@ -151,20 +154,21 @@ app.post("/api/query", async (req, res) => {
     if (resources.length > 0) {
       // Step 4: Generate AI-powered response based on FOUND resources
       console.log(`Found ${resources.length} resources in category "${matchedCategory}". Generating AI response.`);
-      // **Format resource details for better Markdown list potential**
       const resourceDetails = resources
           .map(resource => `- **${resource.name}**: ${resource.description || 'No description.'}${resource.navigateTo && resource.navigateTo !== '#' ? ` [Book Here](${resource.navigateTo})` : ''}`)
-          .join("\n"); // Join with newline
+          .join("\n");
 
-      // **Updated Prompt requesting Markdown**
+      // --- MODIFIED PROMPT ---
       const contextPrompt = `You are a helpful assistant for GradGear. Answer the user's query: "${query}".
 Base your response ONLY on the following resources found in the "${matchedCategory}" category.
-Present the relevant resources clearly, using Markdown for formatting (like lists and bold text). Make sure to include the specific booking links provided within the resource details using Markdown link syntax [Link Text](URL). If a resource doesn't seem directly relevant to the query, you can mention it briefly at the end.
+Present the relevant resources as a plain Markdown list (using * or -). Use bold text (\`**Text**\`) only for the resource names. Make sure to include the specific booking links provided using Markdown link syntax \`[Book Here](URL)\`.
+If a resource seems less directly relevant to the user's query focus (e.g., an adapter when asking for chargers), include it in the list but describe its function or relevance in plain text without using italics.
 
 Resources:
 ${resourceDetails}
 
-Concise Response (using Markdown):`;
+Concise Response (using plain Markdown list, bold names, and links only):`;
+      // --- END MODIFIED PROMPT ---
 
       try {
         const result = await generativeModel.generateContent(contextPrompt);

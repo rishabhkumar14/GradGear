@@ -18,6 +18,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  useTheme,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import SearchIcon from "@mui/icons-material/Search";
@@ -27,6 +28,7 @@ import MicIcon from "@mui/icons-material/Mic";
 import KeyboardVoiceIcon from "@mui/icons-material/KeyboardVoice";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
 
 // Example suggestions for the assistant
 const suggestions = [
@@ -38,6 +40,7 @@ const suggestions = [
 ];
 
 function AIAssistant(props) {
+  const theme = useTheme();
   const [inputValue, setInputValue] = React.useState("");
   const [conversation, setConversation] = React.useState([
     {
@@ -214,7 +217,7 @@ function AIAssistant(props) {
     <Box
       component="main"
       sx={{
-        backgroundColor: "#f0f0f9",
+        backgroundColor: theme.palette.background.default,
         flexGrow: 1,
         p: 3,
         transition: "margin-left 0.3s ease",
@@ -289,7 +292,8 @@ function AIAssistant(props) {
           flexDirection: "column",
           borderRadius: "12px",
           overflow: "hidden",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+          backgroundColor: theme.palette.background.paper,
+          boxShadow: theme.shadows[2],
         }}
       >
         {/* Chat history container */}
@@ -299,7 +303,7 @@ function AIAssistant(props) {
             p: 3,
             overflowY: "auto",
             maxHeight: "calc(100vh - 220px)",
-            bgcolor: "#f9f9fc",
+            bgcolor: theme.palette.mode === 'dark' ? theme.palette.grey[900] : theme.palette.grey[50],
           }}
         >
           <List sx={{ width: "100%" }}>
@@ -317,7 +321,13 @@ function AIAssistant(props) {
                     <Avatar
                       sx={{
                         bgcolor:
-                          message.role === "assistant" ? "#5c6bc0" : "#e0e0e0",
+                          message.role === "assistant"
+                            ? theme.palette.primary.main
+                            : theme.palette.grey[400],
+                        color:
+                          message.role === "assistant"
+                            ? theme.palette.primary.contrastText
+                            : theme.palette.getContrastText(theme.palette.grey[400]),
                         width: 36,
                         height: 36,
                       }}
@@ -334,50 +344,56 @@ function AIAssistant(props) {
                       display: "flex",
                       flexDirection: "column",
                       maxWidth: "75%",
+                      alignItems:
+                        message.role === "user" ? "flex-end" : "flex-start",
                     }}
                   >
                     <Paper
                       elevation={1}
                       sx={{
                         padding: 1.5,
-                        maxWidth: "80%",
-                        wordWrap: "break-word",
-                        backgroundColor: message.role === "user" ? "#e0f7fa" : "#f0f4c4", // Different background colors for user and AI
+                        bgcolor:
+                          message.role === "assistant"
+                            ? theme.palette.background.paper
+                            : theme.palette.primary.light,
+                        color:
+                          message.role === "assistant"
+                            ? theme.palette.text.primary
+                            : theme.palette.primary.contrastText,
+                        borderRadius: "12px",
+                        boxShadow: theme.shadows[1],
+                        wordWrap: 'break-word',
+                        maxWidth: '100%',
                       }}
                     >
                       {message.role === 'assistant' ? (
                         <Box
                           sx={{
-                            // --- START: Refined Markdown Styles ---
-                            // Ensure paragraphs have some spacing
                             '& p': { my: 0.5 },
-                            // List styling
                             '& ul': { pl: 2.5, my: 0.5 },
                             '& li': { mb: 0.5 },
-                            // Explicit and forceful link styling
-                            '& a, & a:link, & a:visited': { // Target different link states
-                                color: 'primary.main', // Use theme color
-                                textDecoration: 'underline !important', // Force underline initially
-                                cursor: 'pointer !important', // Force pointer cursor
-                                fontWeight: 500,
-                                '&:hover': { // Hover effect
-                                    opacity: 0.8,
-                                    textDecoration: 'none !important', // Optional: remove underline on hover
-                                },
+                            '& a, & a:link, & a:visited': {
+                              color: message.role === 'assistant'
+                                     ? theme.palette.primary.main
+                                     : theme.palette.primary.dark,
+                              textDecoration: 'underline !important',
+                              cursor: 'pointer !important',
+                              fontWeight: 500,
+                              '&:hover': {
+                                opacity: 0.8,
+                                textDecoration: 'none !important',
+                              },
                             },
-                            // Bold text styling
                             '& strong': {
-                                fontWeight: 'bold',
+                              fontWeight: 'bold',
                             },
-                            // --- END: Refined Markdown Styles ---
                           }}
                         >
-                           <ReactMarkdown>
+                           <ReactMarkdown rehypePlugins={[rehypeRaw]}>
                              {message.content || ""}
                            </ReactMarkdown>
                         </Box>
                       ) : (
-                        // User message rendering
                         <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
                           {message.content}
                         </Typography>
@@ -463,8 +479,8 @@ function AIAssistant(props) {
         <Box
           sx={{
             p: 2,
-            borderTop: "1px solid rgba(0, 0, 0, 0.1)",
-            backgroundColor: "white",
+            borderTop: `1px solid ${theme.palette.divider}`,
+            backgroundColor: theme.palette.background.paper,
             display: "flex",
             alignItems: "center",
           }}
@@ -480,7 +496,7 @@ function AIAssistant(props) {
             sx={{
               "& .MuiOutlinedInput-root": {
                 borderRadius: "24px",
-                backgroundColor: "#f5f5f7",
+                backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[800] : theme.palette.grey[100],
               },
             }}
             InputProps={{

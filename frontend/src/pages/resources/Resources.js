@@ -14,6 +14,7 @@ import {
   Collapse,
   useMediaQuery,
   useTheme,
+  CircularProgress,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
@@ -31,13 +32,13 @@ import MemoryIcon from "@mui/icons-material/Memory";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import resourcesDataSet from "./ResourcesData.js";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
-// Import image
-import laptopImg from "../../assets/laptop.png"; // Default image for laptops
+// Import API service
+import { resourcesApi } from "../../services/api";
 
-// Enhanced resource data with more detailed descriptions
-const resourcesData = resourcesDataSet;
+// Default image for resources
+import imgNotFound from "../../assets/imgNotFound.png";
 
 // Get category icon based on category name
 const getCategoryIcon = (category) => {
@@ -77,20 +78,46 @@ function Resources(props) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+  // State
   const [searchTerm, setSearchTerm] = React.useState("");
+  const [resourcesData, setResourcesData] = React.useState({});
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(null);
+  
   const scrollContainerRefs = React.useRef({});
   const [visibleButtons, setVisibleButtons] = React.useState({});
   const [componentMounted, setComponentMounted] = React.useState(false);
   const [expandedCategories, setExpandedCategories] = React.useState({});
 
+  // Fetch resources from API
+  React.useEffect(() => {
+    const fetchResources = async () => {
+      try {
+        setLoading(true);
+        const data = await resourcesApi.getAllResources();
+        setResourcesData(data);
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching resources:", err);
+        setError("Failed to load resources. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchResources();
+  }, []);
+
   // Initialize expanded state for all categories
   React.useEffect(() => {
-    const initialExpandedState = {};
-    Object.keys(resourcesData).forEach((category) => {
-      initialExpandedState[category] = !isMobile; // Collapse categories on mobile by default
-    });
-    setExpandedCategories(initialExpandedState);
-  }, [isMobile]);
+    if (Object.keys(resourcesData).length > 0) {
+      const initialExpandedState = {};
+      Object.keys(resourcesData).forEach((category) => {
+        initialExpandedState[category] = !isMobile; // Collapse categories on mobile by default
+      });
+      setExpandedCategories(initialExpandedState);
+    }
+  }, [resourcesData, isMobile]);
 
   // Toggle category expansion
   const toggleCategory = (category) => {
@@ -102,7 +129,7 @@ function Resources(props) {
 
   // Filter resources based on search term
   const filteredResources = React.useMemo(() => {
-    if (!searchTerm.trim()) {
+    if (!searchTerm.trim() || Object.keys(resourcesData).length === 0) {
       return resourcesData;
     }
 
@@ -124,10 +151,16 @@ function Resources(props) {
     });
 
     return filtered;
-  }, [searchTerm]);
+  }, [searchTerm, resourcesData]);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
+  };
+
+  // Handle search form submission
+  const handleSearchSubmit = (event) => {
+    event.preventDefault();
+    // No need to do anything else as the filteredResources will update automatically
   };
 
   // Check if a category's container can scroll
@@ -331,13 +364,16 @@ function Resources(props) {
                 }}
               >
                 <img
-                  src={item.image || laptopImg}
+                  src={item.image || imgNotFound}
                   alt={item.name}
                   style={{
                     width: "100%",
                     height: "100%",
                     objectFit: "cover",
                     objectPosition: "center",
+                  }}
+                  onError={(e) => {
+                    e.target.src = imgNotFound; // Fallback to local image if API image fails
                   }}
                 />
               </Box>
@@ -583,6 +619,8 @@ function Resources(props) {
 
         {/* Search Bar - Responsive */}
         <Paper
+          component="form"
+          onSubmit={handleSearchSubmit}
           sx={{
             p: { xs: 0.75, sm: 1 },
             mb: { xs: 2, sm: 4 },
@@ -626,6 +664,7 @@ function Resources(props) {
 
           {/* Filter button - full width on mobile */}
           <Button
+            type="submit"
             variant="contained"
             color="primary"
             size="small"
@@ -645,8 +684,41 @@ function Resources(props) {
         </Paper>
       </Box>
 
+      {/* Loading state */}
+      {loading && (
+        <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+          <CircularProgress />
+        </Box>
+      )}
+
+      {/* Error state */}
+      {error && (
+        <Paper
+          sx={{ p: { xs: 2, sm: 4 }, borderRadius: "8px", textAlign: "center" }}
+        >
+          <ErrorOutlineIcon
+            sx={{ fontSize: 48, color: "error.main", mb: 2 }}
+          />
+          <Typography
+            variant="h6"
+            color="error"
+            sx={{ fontSize: { xs: "1rem", sm: "1.25rem" } }}
+          >
+            {error}
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ mt: 2 }}
+            onClick={() => window.location.reload()}
+          >
+            Refresh Page
+          </Button>
+        </Paper>
+      )}
+
       {/* Display each category */}
-      {Object.keys(filteredResources).length > 0 ? (
+      {!loading && !error && Object.keys(filteredResources).length > 0 ? (
         Object.keys(filteredResources).map((category) => (
           <Box key={category} sx={{ mb: { xs: 2, sm: 4 } }}>
             {/* Enhanced category header with icon and count */}
@@ -726,17 +798,20 @@ function Resources(props) {
           </Box>
         ))
       ) : (
-        <Paper
-          sx={{ p: { xs: 2, sm: 4 }, borderRadius: "8px", textAlign: "center" }}
-        >
-          <Typography
-            variant="h6"
-            color="text.secondary"
-            sx={{ fontSize: { xs: "1rem", sm: "1.25rem" } }}
+        !loading &&
+        !error && (
+          <Paper
+            sx={{ p: { xs: 2, sm: 4 }, borderRadius: "8px", textAlign: "center" }}
           >
-            No resources found matching your search. Try different keywords.
-          </Typography>
-        </Paper>
+            <Typography
+              variant="h6"
+              color="text.secondary"
+              sx={{ fontSize: { xs: "1rem", sm: "1.25rem" } }}
+            >
+              No resources found matching your search. Try different keywords.
+            </Typography>
+          </Paper>
+        )
       )}
     </Box>
   );

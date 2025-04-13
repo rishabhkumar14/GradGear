@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import resourcesData from "./data.js";
+// Import Google Generative AI
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const app = express();
 const PORT = 5000;
@@ -8,6 +10,10 @@ const PORT = 5000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// --- Gemini Initialization ---
+const genAI = new GoogleGenerativeAI("AIzaSyBqNaAOL-GaBHoznIkNkbqvXZTam0quRw4");
+const generativeModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });  // For generation (Using flash for speed/cost efficiency)
 
 // Dynamically generate categories from resourcesData
 const categories = Object.keys(resourcesData);
@@ -20,15 +26,16 @@ const keywordCategoryMap = {
   "adapter": "Charger",
   "camera": "Camera",
   "microscope": "Accessories",
-  "projector": "Accessories",
+  "projector": "Projector",
   "laptop": "Laptop",
-  "computer": "Laptop",
-  "macbook": "Laptop",
-  "windows": "Laptop",
+  "computer": "Computer",
+  "macbook": "Macbook",
+  "windows": "Windows",
   "room": "Space",
-  "study room": "Space",
-  "conference room": "Space",
+  "study room": "Study Room",
+  "conference room": "Conference Room",
   "gpu": "Working with GPUs",
+  "gpus": "Working with GPUs",
   "graphics card": "Working with GPUs",
   "space": "Space",
   "charging": "Charger", // Added "charging" to map to the "Charger" category
@@ -42,6 +49,7 @@ function preprocessQuery(query) {
   const stopWords = ["where", "can", "i", "find", "get", "a", "the", "how", "want", "to", "book", "i", "need", "tell", "me", "about", "on", "campus", "are", "available", "for", "loan", "what", "do", "water"];
   const processedQuery = query
     .toLowerCase()
+    .replace(/[?]/g, '')
     .split(/\s+/)
     .filter((word) => !stopWords.includes(word))
     .join(" ");
@@ -145,65 +153,68 @@ app.post("/api/query", async (req, res) => {
 
     // Step 3: Attempt to find a category using keywords
     const matchedCategory = findCategoryFromKeywords(preprocessedQuery);
+    console.log("Matched category:", matchedCategory); // ADDED
 
+    let resources = [];
     if (matchedCategory) {
       // If a category match is found, return the resources for that category
-      const resources = findResourcesByCategory(matchedCategory);
-      let responseText = `Here are the resources we found in the **${matchedCategory}** category for your query:\n\n`;
-      resources.forEach((resource, index) => {
-        if (resource.navigateTo && resource.navigateTo !== "#") {
-          responseText += `${index + 1}. **${resource.name}** - [Book here](${resource.navigateTo})\n`;
-        } else {
-          responseText += `${index + 1}. **${resource.name}** - This resource is not available for booking through our system.\n`;
-        }
-      });
-
-      return res.json({
-        success: true,
-        response: responseText,
-        relatedResources: resources,
-      });
+      resources = findResourcesByCategory(matchedCategory);
     }
 
-    // Step 4: Attempt to find resources directly by matching keywords in resource names/descriptions
-    const matchedResources = [];
-    for (const [category, resources] of Object.entries(resourcesData)) {
-      for (const resource of resources) {
-        const resourceText = `${resource.name} ${resource.description}`.toLowerCase();
-        if (preprocessedQuery.split(" ").some((word) => resourceText.includes(word))) {
-          matchedResources.push(resource);
-        }
+    if (resources.length > 0) {
+      // Step 4: Generate AI-powered response based on resources
+      const resourceDetails = resources.map(resource => `- ${resource.name}: ${resource.description}`).join("\n");
+      const prompt = `You are a helpful assistant for GradGear, helping users find university resources.  Based on the following resources, generate a concise and informative response to the user's query: "${query}".  Include booking links where available.\n\nResources:\n${resourceDetails}\n\nResponse:`;
+
+      try {
+        const result = await generativeModel.generateContent(prompt);
+        const responseText = result.response.text();
+        return res.json({
+          success: true,
+          response: responseText,
+          relatedResources: resources,
+        });
+      } catch (error) {
+        console.error("Error generating AI response:", error);
+        // Fallback to a simple response if AI generation fails
+        let responseText = `Here are the resources we found in the **${matchedCategory}** category for your query:\n\n`;
+        resources.forEach((resource, index) => {
+          if (resource.navigateTo && resource.navigateTo !== "#") {
+            responseText += `${index + 1}. **${resource.name}** - [Book here](${resource.navigateTo})\n`;
+          } else {
+            responseText += `${index + 1}. **${resource.name}** - This resource is not available for booking through our system.\n`;
+          }
+        });
+        return res.json({
+          success: true,
+          response: responseText,
+          relatedResources: resources,
+        });
+      }
+    } else {
+      // Step 5: If no resource match is found, use Gemini for general knowledge
+      const prompt = `You are a helpful and friendly chatbot. Answer the following question: ${query}`;
+      try {
+        const result = await generativeModel.generateContent(prompt);
+        const responseText = result.response.text();
+        return res.json({
+          success: true,
+          response: responseText,
+          relatedResources: [],
+        });
+      } catch (error) {
+        console.error("Error generating general knowledge response:", error);
+        return res.status(500).json({
+          success: false,
+          error: "Internal Server Error. Please try again later.",
+        });
       }
     }
-
-    if (matchedResources.length > 0) {
-      let responseText = `Here are the resources we found that match your query:\n\n`;
-      matchedResources.forEach((resource, index) => {
-        if (resource.navigateTo && resource.navigateTo !== "#") {
-          responseText += `${index + 1}. **${resource.name}** - [Book here](${resource.navigateTo})\n`;
-        } else {
-          responseText += `${index + 1}. **${resource.name}** - This resource is not available for booking through our system.\n`;
-        }
-      });
-
-      return res.json({
-        success: true,
-        response: responseText,
-        relatedResources: matchedResources,
-      });
-    }
-
-    // Step 5: If no match is found, return a fallback response
-    return res.json({
-      success: true,
-      response: `Sorry, we couldn't find any resources matching your query. If you'd like to contribute resources to our system, please visit the [Contribute page](http://localhost:3000/contribute).`,
-      relatedResources: [],
-    });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({
       success: false,
-      error: "Internal Server Error. Please try again later or visit the [Contribute page](http://localhost:3000/contribute) to add resources.",
+      error: "Internal Server Error. Please try again later.",
     });
   }
 });

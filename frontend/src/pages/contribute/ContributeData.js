@@ -36,6 +36,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import FolderOpenIcon from "@mui/icons-material/FolderOpen";
 import CategoryIcon from "@mui/icons-material/Category";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import { resourcesApi } from "../../services/api";
 
 function Contribute(props) {
   const theme = useTheme();
@@ -63,6 +64,55 @@ function Contribute(props) {
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState("");
   const [snackbarSeverity, setSnackbarSeverity] = React.useState("success");
+  const [isError, setIsError] = React.useState(false);
+
+
+  // Addition :
+  const [isLoading,setIsLoading] = React.useState(false);
+  const [categoryListData,setCategoryListData] = React.useState([]);
+
+   // Fetch categories from API
+   React.useEffect(() => {
+    const fetchResources = async () => {
+      try {
+        setIsLoading(true);
+        const data = await resourcesApi.getAllCategories();
+        const formattedData = formatCategoryResData(data)
+        setCategoryListData(formattedData);
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+        setCategoryListData([
+          { id: 1, name: "spaces" },
+          { id: 2, name: "lockers" },
+          { id: 3, name: "charger" },
+          { id: 4, name: "laptop" },
+          { id: 5, name: "accessories" },
+          { id: 6, name: "camera" },
+          { id: 7, name: "vending accessories" },
+          { id: 8, name: "working with gpus" },
+          { id: 9, name: "other" },
+        ]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchResources();
+  }, []);
+  
+  
+  const formatCategoryResData = (data) => {
+    const result = [];
+    let cnt = 1;
+  
+    data.forEach((category) => {
+      result.push({ id: cnt, name: category });
+      cnt++;
+    });
+  
+    console.log(result);
+    return result;
+  };
 
   // Sample categories for the dropdown
   const categories = [
@@ -560,7 +610,7 @@ function Contribute(props) {
                             },
                           }}
                         >
-                          {categories.map((category) => (
+                          {!isLoading && categoryListData.map((category) => (
                             <MenuItem
                               key={category.id}
                               value={category.id}
@@ -800,13 +850,22 @@ function Contribute(props) {
             horizontal: isMobile ? "center" : "left",
           }}
         >
+          { isError ?
           <Alert
             onClose={handleCloseSnackbar}
-            severity={snackbarSeverity}
+            severity="error"
             sx={{ width: "100%" }}
           >
             {snackbarMessage}
           </Alert>
+          : <Alert
+            onClose={handleCloseSnackbar}
+            severity="success"
+            sx={{ width: "100%" }}
+          >
+            {snackbarMessage}
+          </Alert>
+          }
         </Snackbar>
       </Box>
     </>

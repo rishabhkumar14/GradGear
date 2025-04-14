@@ -36,6 +36,8 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import FolderOpenIcon from "@mui/icons-material/FolderOpen";
 import CategoryIcon from "@mui/icons-material/Category";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+
+import startCase from 'lodash/startCase';
 import { resourcesApi } from "../../services/api";
 
 function Contribute(props) {
@@ -106,7 +108,7 @@ function Contribute(props) {
     let cnt = 1;
   
     data.forEach((category) => {
-      result.push({ id: cnt, name: category });
+      result.push({ id: cnt, name: startCase(category) });
       cnt++;
     });
   

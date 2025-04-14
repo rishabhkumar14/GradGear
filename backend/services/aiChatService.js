@@ -1,6 +1,8 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const config = require('../config/config');
 
+const BASE_URL = process.env.BASE_URL;
+
 // Initialize Gemini API with the API key from config
 const genAI = new GoogleGenerativeAI(config.gemini.apiKey);
 
@@ -334,7 +336,7 @@ Unfortunately, we couldn't find any specific resources matching this query in ou
 Provide a friendly, helpful response that:
 1. Acknowledges we don't have an exact match for their specific request
 2. Suggests they might try different keywords or be more specific
-3. Mentions they can contribute missing resources via the Contribute page. The link for the contribute page is http://localhost:3000/contribute. Hide the link behind the text "Contribute page"
+3. Mentions they can contribute missing resources via the Contribute page. The link for the contribute page is ${BASE_URL}/contribute. Hide the link behind the text "Contribute page"
 4. Offers to help with any other resource-related questions
 5. Is concise (no more than 100 words)`;
 

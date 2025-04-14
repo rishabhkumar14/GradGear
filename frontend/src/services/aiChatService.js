@@ -12,7 +12,7 @@ const aiChatService = {
   sendQuery: async (query) => {
     try {
       const response = await api.post('/chat/query', { query });
-      return response.data.Data;
+      return response.data['Data'];
     } catch (error) {
       console.error('Error sending query to AI chat service:', error);
       

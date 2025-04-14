@@ -33,6 +33,8 @@ import StarIcon from "@mui/icons-material/Star";
 import FeedbackIcon from "@mui/icons-material/Feedback";
 import ContactSupportIcon from "@mui/icons-material/ContactSupport";
 
+import { abousUsApi } from "../../services/api";
+
 // Project information
 const projectInfo = {
   name: "RetailHub - Resources Portal",
@@ -67,18 +69,36 @@ function AboutUsData(props) {
   const [contactMessage, setContactMessage] = React.useState("");
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState("");
+  const [isError, setIsError] = React.useState(false);
 
-  const handleFeedbackSubmit = (event) => {
+  const handleFeedbackSubmit = async (event) => {
     event.preventDefault();
+
     console.log({
       rating,
       feedbackType,
       feedbackText,
     });
 
-    setSnackbarMessage("Thank you for your feedback!");
-    setOpenSnackbar(true);
-
+    try { 
+     const response = await abousUsApi.shareFeedback({rating,feedbackType,feedbackText});
+     if(response.success){
+      setSnackbarMessage("Thank you for your feedback!");
+      setIsError(false);
+      setOpenSnackbar(true);
+     }
+     else {
+      // Handle case when API returns success: false
+      setSnackbarMessage("Sorry your feedback couldn't be updated right now. Please try again later.");
+      setIsError(true);
+      setOpenSnackbar(true);
+    }
+    }
+    catch (err) {
+      setSnackbarMessage("Sorry your feedback couldn't be updated right now. Please try again later");
+      setIsError(true);
+      setOpenSnackbar(true);
+    }
     // Reset form
     setRating(0);
     setFeedbackType("general");
@@ -693,13 +713,22 @@ function AboutUsData(props) {
             horizontal: isMobile ? "center" : "left",
           }}
         >
+          { isError ?
           <Alert
+            onClose={handleCloseSnackbar}
+            severity="error"
+            sx={{ width: "100%" }}
+          >
+            {snackbarMessage}
+          </Alert>
+          : <Alert
             onClose={handleCloseSnackbar}
             severity="success"
             sx={{ width: "100%" }}
           >
             {snackbarMessage}
           </Alert>
+          }
         </Snackbar>
       </Box>
     </>

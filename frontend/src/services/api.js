@@ -89,4 +89,26 @@ export const resourcesApi = {
   }
 };
 
+export const abousUsApi = {
+  shareFeedback: async (feedback) => {
+    try{
+      const response = await api.post('/feedback',feedback);
+      return response.data['Data'];
+    } catch (err) {
+      console.log('Error in posting feedback:',err);
+      throw err;
+    }
+  },
+
+  contactUs : async (contactDetails) => {
+    try{
+      const response = await api.post('/contact',contactDetails);
+      return response.data['Data'];
+    } catch (err) {
+      console.log('Error in posting feedback:',err);
+      throw err;
+    }
+  }
+}
+
 export default api;

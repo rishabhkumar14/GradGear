@@ -15,6 +15,8 @@ import {
   CircularProgress,
   Button,
   Chip,
+  Card,
+  CardContent,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import SearchIcon from "@mui/icons-material/Search";
@@ -23,41 +25,25 @@ import PersonIcon from "@mui/icons-material/Person";
 import MicIcon from "@mui/icons-material/Mic";
 import KeyboardVoiceIcon from "@mui/icons-material/KeyboardVoice";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import ReactMarkdown from 'react-markdown';
+
+// Import API service
+import aiChatService from "../../services/aiChatService";
+
+// Import default image
 import laptopImg from "../../assets/laptop.png";
 
-// Example suggestions for the assistant
+// Sample suggestions to help users get started
 const suggestions = [
   "Where can I find a laptop power bank?",
   "How do I book a study room?",
   "Tell me about charging options on campus",
   "What cameras are available for loan?",
   "How do I access GPU computing resources?",
+  "I need to record audio for a project",
+  "I'm looking for a microscope",
 ];
-
-// Example response data
-const exampleResponses = {
-  "Where can I find a laptop power bank?": {
-    text: "Laptop power banks are available at the following locations:\n\n• International Village Basement\n• Second floor of EXP next to the student printers\n• Third floor of EXP next to the student printers\n\nYou can borrow them for up to 8 hours and they're compatible with most major laptop brands.",
-    relatedResource: {
-      id: 3,
-      name: "Laptop power bank",
-      description: "Available at International Village Basement and EXP floors",
-      image: laptopImg,
-      navigateTo:
-        "https://service.northeastern.edu/tech?id=kb_article&sysparm_article=KB000018991",
-    },
-  },
-  "How do I book a study room?": {
-    text: "You can reserve study rooms in Snell Library through the Snell Booking system. Rooms are available for 3-hour blocks and include multimedia support and whiteboard facilities. Perfect for group projects and study sessions.",
-    relatedResource: {
-      id: 1,
-      name: "Snell Booking",
-      description: "Reserve study rooms in Snell Library",
-      image: laptopImg,
-      navigateTo: "https://northeastern.libcal.com/reserve/",
-    },
-  },
-};
 
 function AIAssistant(props) {
   const [inputValue, setInputValue] = React.useState("");
@@ -72,14 +58,15 @@ function AIAssistant(props) {
   const [isLoading, setIsLoading] = React.useState(false);
   const messagesEndRef = React.useRef(null);
   const [isListening, setIsListening] = React.useState(false);
+  const [error, setError] = React.useState(null);
 
-  // const scrollToBottom = () => {
-  //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  // };
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
-  // React.useEffect(() => {
-  //   scrollToBottom();
-  // }, [conversation]);
+  React.useEffect(() => {
+    scrollToBottom();
+  }, [conversation]);
 
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
@@ -97,33 +84,55 @@ function AIAssistant(props) {
     setConversation((prev) => [...prev, userMessage]);
     setInputValue("");
     setIsLoading(true);
+    setError(null);
 
-    // Simulate API delay
-    setTimeout(() => {
-      let responseContent =
-        "I'm not sure about that. Could you please ask me something about the available resources?";
-      let relatedResource = null;
+    try {
+      // Send the query to the AI chat service
+      const response = await aiChatService.sendQuery(userMessage.content);
+      
+      if (response.success) {
+        const assistantResponse = {
+          role: "assistant",
+          content: response.response,
+          timestamp: new Date(),
+          relatedResources: response.relatedResources || [],
+          matchType: response.matchType,
+        };
 
-      // Check if we have a predefined answer
-      if (exampleResponses[userMessage.content]) {
-        responseContent = exampleResponses[userMessage.content].text;
-        relatedResource = exampleResponses[userMessage.content].relatedResource;
+        setConversation((prev) => [...prev, assistantResponse]);
+      } else {
+        // Handle error response
+        setError(response.error || "Failed to get a response. Please try again.");
+        
+        const errorResponse = {
+          role: "assistant",
+          content: response.error || "I'm sorry, I encountered an error while processing your request. Please try again or rephrase your question.",
+          timestamp: new Date(),
+          isError: true,
+        };
+        
+        setConversation((prev) => [...prev, errorResponse]);
       }
-
-      const assistantResponse = {
+    } catch (error) {
+      console.error("Error sending message:", error);
+      
+      setError("An unexpected error occurred. Please try again.");
+      
+      const errorResponse = {
         role: "assistant",
-        content: responseContent,
+        content: "I'm sorry, I encountered an error while processing your request. Please try again or rephrase your question.",
         timestamp: new Date(),
-        relatedResource,
+        isError: true,
       };
-
-      setConversation((prev) => [...prev, assistantResponse]);
+      
+      setConversation((prev) => [...prev, errorResponse]);
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
+    if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
       handleSendMessage();
     }
@@ -131,6 +140,8 @@ function AIAssistant(props) {
 
   const handleSuggestionClick = (suggestion) => {
     setInputValue(suggestion);
+    
+    // Small delay to update UI before sending
     setTimeout(() => {
       const userMessage = {
         role: "user",
@@ -139,37 +150,61 @@ function AIAssistant(props) {
       };
 
       setConversation((prev) => [...prev, userMessage]);
+      setInputValue("");
       setIsLoading(true);
+      setError(null);
 
-      // Simulate API delay
-      setTimeout(() => {
-        let responseContent =
-          "I'm not sure about that. Could you please ask me something about the available resources?";
-        let relatedResource = null;
+      // Send the suggestion to the AI service
+      aiChatService.sendQuery(suggestion)
+        .then(response => {
+          if (response.success) {
+            const assistantResponse = {
+              role: "assistant",
+              content: response.response,
+              timestamp: new Date(),
+              relatedResources: response.relatedResources || [],
+              matchType: response.matchType,
+            };
 
-        // Check if we have a predefined answer
-        if (exampleResponses[suggestion]) {
-          responseContent = exampleResponses[suggestion].text;
-          relatedResource = exampleResponses[suggestion].relatedResource;
-        }
-
-        const assistantResponse = {
-          role: "assistant",
-          content: responseContent,
-          timestamp: new Date(),
-          relatedResource,
-        };
-
-        setConversation((prev) => [...prev, assistantResponse]);
-        setIsLoading(false);
-      }, 1500);
+            setConversation((prev) => [...prev, assistantResponse]);
+          } else {
+            setError(response.error || "Failed to get a response. Please try again.");
+            
+            const errorResponse = {
+              role: "assistant",
+              content: response.error || "I'm sorry, I encountered an error while processing your request. Please try again or rephrase your question.",
+              timestamp: new Date(),
+              isError: true,
+            };
+            
+            setConversation((prev) => [...prev, errorResponse]);
+          }
+        })
+        .catch(error => {
+          console.error("Error processing suggestion:", error);
+          
+          setError("An unexpected error occurred. Please try again.");
+          
+          const errorResponse = {
+            role: "assistant",
+            content: "I'm sorry, I encountered an error while processing your request. Please try again or rephrase your question.",
+            timestamp: new Date(),
+            isError: true,
+          };
+          
+          setConversation((prev) => [...prev, errorResponse]);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }, 300);
   };
 
   const toggleListening = () => {
     setIsListening(!isListening);
+    
     if (!isListening) {
-      // Simulate a voice input
+      // Simulate a voice input (in a real app, this would use the Web Speech API)
       setTimeout(() => {
         setInputValue("Where can I find a laptop power bank?");
         setIsListening(false);
@@ -179,16 +214,6 @@ function AIAssistant(props) {
 
   const formatTimestamp = (date) => {
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  };
-
-  // Format multiline text to preserve newlines
-  const formatMessageText = (text) => {
-    return text.split("\n").map((line, i) => (
-      <React.Fragment key={i}>
-        {line}
-        {i < text.split("\n").length - 1 && <br />}
-      </React.Fragment>
-    ));
   };
 
   const handleResourceClick = (url) => {
@@ -295,14 +320,43 @@ function AIAssistant(props) {
                       sx={{
                         p: 2,
                         bgcolor:
-                          message.role === "assistant" ? "#ffffff" : "#e3f2fd",
+                          message.role === "assistant" 
+                            ? message.isError ? "#ffebee" : "#ffffff" 
+                            : "#e3f2fd",
                         borderRadius: "12px",
                         boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
                       }}
                     >
-                      <Typography variant="body1">
-                        {formatMessageText(message.content)}
-                      </Typography>
+                      {message.role === "assistant" ? (
+                        message.isError ? (
+                          <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 1 }}>
+                            <ErrorOutlineIcon color="error" sx={{ mr: 1 }} />
+                            <Typography variant="body1">{message.content}</Typography>
+                          </Box>
+                        ) : (
+                          <ReactMarkdown 
+                            components={{
+                              p: (props) => <Typography variant="body1" {...props} sx={{ mb: 1 }} />,
+                              ul: (props) => <Box component="ul" sx={{ ml: 2, mt: 1, mb: 1 }} {...props} />,
+                              li: (props) => <Typography component="li" variant="body1" sx={{ mb: 0.5 }} {...props} />,
+                              a: (props) => <Button 
+                                component="a" 
+                                variant="text" 
+                                color="primary"
+                                size="small"
+                                href={props.href}
+                                target="_blank"
+                                sx={{ p: 0, minWidth: 'auto', textTransform: 'none', fontWeight: 'bold' }}
+                                {...props}
+                              />
+                            }}
+                          >
+                            {message.content}
+                          </ReactMarkdown>
+                        )
+                      ) : (
+                        <Typography variant="body1">{message.content}</Typography>
+                      )}
                     </Paper>
 
                     {/* Timestamp */}
@@ -318,67 +372,99 @@ function AIAssistant(props) {
                       {formatTimestamp(message.timestamp)}
                     </Typography>
 
-                    {/* Related resource card */}
-                    {message.relatedResource && (
-                      <Paper
-                        sx={{
-                          mt: 2,
-                          p: 1.5,
-                          borderRadius: "8px",
-                          display: "flex",
-                          cursor: "pointer",
-                          transition: "transform 0.2s",
-                          "&:hover": {
-                            transform: "translateY(-2px)",
-                            boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-                          },
-                        }}
-                        onClick={() =>
-                          handleResourceClick(
-                            message.relatedResource.navigateTo
-                          )
-                        }
-                      >
-                        <Box
-                          sx={{ width: 80, height: 80, flexShrink: 0, mr: 2 }}
-                        >
-                          <img
-                            src={message.relatedResource.image}
-                            alt={message.relatedResource.name}
-                            style={{
-                              width: "100%",
-                              height: "100%",
-                              objectFit: "cover",
-                              borderRadius: "4px",
-                            }}
-                          />
-                        </Box>
-                        <Box sx={{ flexGrow: 1 }}>
-                          <Typography variant="subtitle1" fontWeight="medium">
-                            {message.relatedResource.name}
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            color="text.secondary"
-                            sx={{ mb: 1 }}
-                          >
-                            {message.relatedResource.description}
-                          </Typography>
-                          <Button
-                            variant="contained"
-                            color="primary"
-                            size="small"
+                    {/* Related resources */}
+                    {message.relatedResources && message.relatedResources.length > 0 && (
+                      <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                        {message.relatedResources.slice(0, 2).map((resource) => (
+                          <Card
+                            key={resource.id}
                             sx={{
-                              py: 0.25,
-                              minHeight: "24px",
-                              fontSize: "0.7rem",
-                              borderRadius: "6px",
+                              display: "flex",
+                              cursor: resource.navigateTo && resource.navigateTo !== "#" ? "pointer" : "default",
+                              transition: "transform 0.2s",
+                              "&:hover": {
+                                transform: "translateY(-2px)",
+                                boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+                              },
+                              borderRadius: "8px",
+                              overflow: "hidden",
                             }}
+                            onClick={() => handleResourceClick(resource.navigateTo)}
                           >
-                            View Resource
-                          </Button>
-                        </Box>
-                      </Paper>
+                            <Box
+                              sx={{
+                                width: 80,
+                                height: 80,
+                                flexShrink: 0,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                bgcolor: "#f5f5f5",
+                              }}
+                            >
+                              <img
+                                src={resource.image || laptopImg}
+                                alt={resource.name}
+                                style={{
+                                  width: "100%",
+                                  height: "100%",
+                                  objectFit: "cover",
+                                }}
+                                onError={(e) => {
+                                  e.target.src = laptopImg; // Fallback image
+                                }}
+                              />
+                            </Box>
+                            <CardContent sx={{ py: 1, flex: 1 }}>
+                              <Typography variant="subtitle1" fontWeight="medium">
+                                {resource.name}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{
+                                  mb: 0.5,
+                                  display: "-webkit-box",
+                                  WebkitLineClamp: 2,
+                                  WebkitBoxOrient: "vertical",
+                                  overflow: "hidden",
+                                }}
+                              >
+                                {resource.description?.split('.')[0]}.
+                              </Typography>
+                              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <Box sx={{ display: "flex", gap: 0.5 }}>
+                                  {resource.chips?.slice(0, 2).map((chip, idx) => (
+                                    <Chip
+                                      key={idx}
+                                      label={chip}
+                                      size="small"
+                                      sx={{
+                                        height: 20,
+                                        fontSize: "0.7rem",
+                                      }}
+                                    />
+                                  ))}
+                                </Box>
+                                {resource.navigateTo && resource.navigateTo !== "#" && (
+                                  <Button
+                                    variant="text"
+                                    color="primary"
+                                    size="small"
+                                    sx={{ p: 0, minHeight: 0, fontSize: "0.75rem" }}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      window.open(resource.navigateTo, "_blank");
+                                    }}
+                                  >
+                                    View
+                                  </Button>
+                                )}
+                              </Box>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </Box>
                     )}
                   </Box>
                 </ListItem>
@@ -422,7 +508,7 @@ function AIAssistant(props) {
         {conversation.length < 3 && (
           <Box sx={{ px: 3, py: 2, backgroundColor: "#f0f7ff" }}>
             <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-              Suggested questions:
+              Try asking:
             </Typography>
             <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
               {suggestions.map((suggestion, index) => (

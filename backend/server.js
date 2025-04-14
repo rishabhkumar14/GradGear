@@ -1,11 +1,13 @@
+
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const config = require('./config/config');
 const resourceRoutes = require('./routes/resourceRoutes');
+const aiChatRoutes = require('./routes/aiChatRoutes');
+const { responseFormatter } = require('./middleware/responseFormatter');
 const serveStatic = require('./middleware/serveStatic');
-const { responseFormatter } = require("./middleware/responseFormatter");
-
+const aiChatController = require('./controllers/aiChatController');
 
 // Initialize app
 const app = express();
@@ -24,6 +26,7 @@ app.use(responseFormatter);
 
 // Routes
 app.use(`${config.api.prefix}/resources`, resourceRoutes);
+app.use(`${config.api.prefix}/chat`, aiChatRoutes);
 
 // Root route
 app.get('/', (req, res) => {
@@ -40,8 +43,15 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`Server is running on port ${PORT}`);
+  
+  // Initialize AI chat service
+  try {
+    await aiChatController.initialize();
+  } catch (error) {
+    console.error("Failed to initialize AI chat service:", error);
+  }
 });
 
 module.exports = app;

@@ -24,6 +24,11 @@ const config = {
   api: {
     prefix: '/api',
   },
+
+  // Gemini API configuration
+  gemini: {
+    apiKey: process.env.GEMINI_API_KEY || 'AIzaSyBqNaAOL-GaBHoznIkNkbqvXZTam0quRw4',
+  }
 };
 
 module.exports = config;

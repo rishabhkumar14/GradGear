@@ -6,6 +6,7 @@ const config = require('./config/config');
 const resourceRoutes = require('./routes/resourceRoutes');
 const aiChatRoutes = require('./routes/aiChatRoutes');
 const feedbackRoutes = require('./routes/feedbackRoutes');
+const contactRoutes = require('./routes/contactRoutes');
 const { responseFormatter } = require('./middleware/responseFormatter');
 const serveStatic = require('./middleware/serveStatic');
 const aiChatController = require('./controllers/aiChatController');
@@ -29,6 +30,7 @@ app.use(responseFormatter);
 app.use(`${config.api.prefix}/resources`, resourceRoutes);
 app.use(`${config.api.prefix}/chat`, aiChatRoutes);
 app.use(`${config.api.prefix}/feedback`, feedbackRoutes);
+app.use(`${config.api.prefix}/contact`, contactRoutes);
 
 // Root route
 app.get('/', (req, res) => {

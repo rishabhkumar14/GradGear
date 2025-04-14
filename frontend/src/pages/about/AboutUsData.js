@@ -105,7 +105,7 @@ function AboutUsData(props) {
     setFeedbackText("");
   };
 
-  const handleContactSubmit = (event) => {
+  const handleContactSubmit = async (event) => {
     event.preventDefault();
     console.log({
       name: contactName,
@@ -114,10 +114,30 @@ function AboutUsData(props) {
       message: contactMessage,
     });
 
-    setSnackbarMessage(
-      "Your message has been sent. We'll get back to you soon!"
-    );
-    setOpenSnackbar(true);
+    try { 
+      const response = await abousUsApi.contactUs({
+        name: contactName,
+        email: contactEmail,
+        subject: contactSubject,
+        message: contactMessage,
+      });
+      if(response.success){
+       setSnackbarMessage("Your message has been sent. We'll get back to you soon!");
+       setOpenSnackbar(true);
+      }
+      else {
+       // Handle case when API returns success: false
+       setSnackbarMessage("Sorry we couldn't send your message right now. Please try again later.");
+       setIsError(true);
+       setOpenSnackbar(true);
+     }
+     }
+     catch (err) {
+      setSnackbarMessage("Sorry we couldn't send your message right now. Please try again later.");
+      setIsError(true);
+      setOpenSnackbar(true);
+     }
+
 
     // Reset form
     setContactName("");
@@ -130,6 +150,7 @@ function AboutUsData(props) {
     if (reason === "clickaway") {
       return;
     }
+    setIsError(false);
     setOpenSnackbar(false);
   };
 

@@ -105,7 +105,29 @@ export const abousUsApi = {
       const response = await api.post('/contact',contactDetails);
       return response.data['Data'];
     } catch (err) {
-      console.log('Error in posting feedback:',err);
+      console.log('Error in posting message:',err);
+      throw err;
+    }
+  }
+}
+
+export const contributeApi = {
+  suggestCategory: async (categoryDetails) => {
+    try{
+      const response = await api.post('/contribute/category',categoryDetails);
+      return response.data['Data'];
+    } catch (err) {
+      console.log('Error in suggesting categories:',err);
+      throw err;
+    }
+  },
+
+  suggestResource : async (resourceDetails) => {
+    try{
+      const response = await api.post('/contribute/resource',resourceDetails);
+      return response.data['Data'];
+    } catch (err) {
+      console.log('Error in suggesting resource:',err);
       throw err;
     }
   }

@@ -38,7 +38,7 @@ import CategoryIcon from "@mui/icons-material/Category";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 
 import startCase from 'lodash/startCase';
-import { resourcesApi } from "../../services/api";
+import { resourcesApi,contributeApi } from "../../services/api";
 
 function Contribute(props) {
   const theme = useTheme();
@@ -112,7 +112,7 @@ function Contribute(props) {
       cnt++;
     });
   
-    console.log(result);
+    // console.log(result);
     return result;
   };
 
@@ -203,7 +203,7 @@ function Contribute(props) {
   };
 
   // Form submission handlers
-  const handleResourceSubmit = (event) => {
+  const handleResourceSubmit = async (event) => {
     event.preventDefault();
 
     if (!validateResourceForm()) return;
@@ -219,16 +219,44 @@ function Contribute(props) {
       image: imageFile ? imageFile.name : null,
     });
 
+
+    try {
+      const response = await contributeApi.suggestResource({
+        type: "resource",
+        name: resourceName,
+        category: resourceCategory,
+        description: resourceDescription,
+        link: resourceLink,
+        tags: resourceTags
+      })
+
+      if(response.success){
+        setSnackbarMessage("Resource suggestion submitted successfully!");
+        setOpenSnackbar(true);
+      }else{
+        setIsError(true);
+        setSnackbarMessage("Sorry! we couldn't submit your suggestion of resource. Please try again later.");
+        setOpenSnackbar(true);
+      }
+      
+    } catch (err) {
+      console.log("Error in submitting a resource",err);
+      setIsError(true);
+      setSnackbarMessage("Sorry! we couldn't submit your suggestion of resource. Please try again later.");
+      setOpenSnackbar(true);
+    }
+
+
     // Show success message
-    setSnackbarSeverity("success");
-    setSnackbarMessage("Resource suggestion submitted successfully!");
-    setOpenSnackbar(true);
+    // setSnackbarSeverity("success");
+    // setSnackbarMessage("Resource suggestion submitted successfully!");
+    // setOpenSnackbar(true);
 
     // Reset form
     resetResourceForm();
   };
 
-  const handleCategorySubmit = (event) => {
+  const handleCategorySubmit = async (event) => {
     event.preventDefault();
 
     if (!validateCategoryForm()) return;
@@ -241,10 +269,34 @@ function Contribute(props) {
       suggestion: categorySuggestion,
     });
 
-    // Show success message
-    setSnackbarSeverity("success");
-    setSnackbarMessage("Category suggestion submitted successfully!");
-    setOpenSnackbar(true);
+    try {
+      const response = await contributeApi.suggestCategory({
+        type: "category",
+        name: categoryName,
+        description: categoryDescription,
+        suggestion: categorySuggestion,
+      })
+
+      if(response.success){
+        setSnackbarMessage("Category suggestion submitted successfully!");
+        setOpenSnackbar(true);
+      }else{
+        setIsError(true);
+        setSnackbarMessage("Sorry! we couldn't submit your suggestion of category. Please try again later.");
+        setOpenSnackbar(true);
+      }
+      
+    } catch (err) {
+      console.log("Error in submitting a category",err);
+      setIsError(true);
+      setSnackbarMessage("Sorry! we couldn't submit your suggestion of category. Please try again later.");
+      setOpenSnackbar(true);
+    }
+
+    // // Show success message
+    // setSnackbarSeverity("success");
+    // setSnackbarMessage("Category suggestion submitted successfully!");
+    // setOpenSnackbar(true);
 
     // Reset form
     resetCategoryForm();
@@ -273,6 +325,7 @@ function Contribute(props) {
       return;
     }
     setOpenSnackbar(false);
+    setIsError(false);
   };
 
   // This will ensure the background fills the entire viewport

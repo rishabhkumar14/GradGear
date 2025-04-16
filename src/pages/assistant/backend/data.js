@@ -3,7 +3,7 @@ const resourcesData = {
     {
       "id": 1,
       "name": "Snell Booking",
-      "description": "Reserve study rooms in Snell Library for group work or individual study. Available for 3-hour blocks with multimedia support and whiteboard facilities. Perfect for project meetings and study sessions.",
+      "description": "Reserve study rooms in Snell Library for group work or individual study. Available for 3-hour blocks with multimedia support and whiteboard facilities. Perfect for project meetings and study sessions. Extended Info: Also known as 'Snell Reservations' or 'Snell Scheduling'; ideal for group discussions, solo study, brainstorming sessions, exam preparations, tutoring meetings, collaborative projects, quiet study retreats, conference-style meetings, interactive seminars, and academic workshops.",
       "navigateTo": "https://northeastern.libcal.com/reserve/",
       "useCases": ["group study", "individual study", "project meeting", "quiet work", "collaboration space", "library room booking"],
       "chips": [
@@ -14,7 +14,8 @@ const resourcesData = {
     {
       "id": 2,
       "name": "Room Reserve",
-      "description": "Book classrooms and collaborative spaces across campus. Reservations can be made up to 2 weeks in advance with faculty approval. Includes AV equipment and flexible seating arrangements.",
+      "description":
+        "Book classrooms and collaborative spaces across campus. Reservations can be made up to 2 weeks in advance with faculty approval. Includes AV equipment and flexible seating arrangements. Extended Info: Also referred to as 'Classroom Booking' or 'Venue Scheduling'; suitable for lectures, seminars, interactive workshops, team meetings, group projects, training sessions, conferences, roundtable discussions, presentation setups, and academic gatherings.",
       "navigateTo": "https://dashboard.robinpowered.com/Northeastern/",
       "useCases": ["classroom booking", "event space", "meeting space", "presentation space", "group collaboration", "campus room booking"],
       "chips": [
@@ -24,7 +25,7 @@ const resourcesData = {
     },
     {
       "id": 3,
-      "name": "Lockers",
+      "name": "Lockers",//not updated
       "description": "Secure storage space for personal items on campus.",
       "navigateTo": "#",
       "useCases": ["personal storage", "secure items", "temporary storage", "gym locker", "commuter storage"],
@@ -73,7 +74,8 @@ const resourcesData = {
     {
       "id": 7,
       "name": "MagSafe 2 charger",
-      "description": "For Apple MacBook charging. Compatible with MacBook Pro and MacBook Air models from 2012-2019. 85W power adapter with magnetic connection to prevent tripping hazards and device damage.",
+      "description":
+        "For Apple MacBook charging. Compatible with MacBook Pro and MacBook Air models from 2012-2019. 85W power adapter with magnetic connection to prevent tripping hazards and device damage. Extended Info: Also termed a 'magnetic adapter' or 'Apple power unit'; use cases include secure charging for Mac notebooks, fast recharging during classes, prevention of cable tangles, desk docking support, travel-safe power delivery, emergency charging in libraries, efficient power-up in meetings, safe classroom charging, continuous study power, and reliable workstation energy.",
       "navigateTo": "https://service.northeastern.edu/tech?id=sc_category&sys_id=b805ea7fdb45cdd0ca10819b13961934&catalog_id=-1",
       "useCases": ["charge macbook", "apple laptop power", "macbook air charger", "macbook pro charger", "magsafe power adapter"],
       "chips": [
@@ -84,7 +86,8 @@ const resourcesData = {
     {
       "id": 8,
       "name": "Microsoft Surface charger",
-      "description": "For Surface devices. Supports all Surface models including Pro, Book, and Laptop series with 65W output. Features built-in USB-A port for simultaneous mobile device charging.",
+      "description":
+        "For Surface devices. Supports all Surface models including Pro, Book, and Laptop series with 65W output. Features built-in USB-A port for simultaneous mobile device charging. Extended Info: Also known as 'Surface adapter' or 'Surface power supply'; use cases include recharging tablets, powering Surface notebooks, mobile workstation support, continuous power during presentations, backup charging in labs, portable device charging for classes, emergency power, student travel accessory, meeting room device support, and everyday device maintenance.",
       "navigateTo": "https://service.northeastern.edu/tech?id=sc_category&sys_id=b805ea7fdb45cdd0ca10819b13961934&catalog_id=-1",
       "useCases": ["charge surface", "microsoft laptop power", "surface pro charger", "surface book charger", "surface laptop charger"],
       "chips": [
@@ -95,7 +98,8 @@ const resourcesData = {
     {
       "id": 9,
       "name": "USB-C adapter",
-      "description": "Universal USB-C adapter for various devices. Includes HDMI, USB-A, and ethernet ports for comprehensive connectivity. Perfect for presentations and connecting to external displays or peripherals.",
+      "description":
+        "Universal USB-C adapter for various devices. Includes HDMI, USB-A, and ethernet ports for comprehensive connectivity. Perfect for presentations and connecting to external displays or peripherals. Extended Info: Also called a 'Type-C multiplexer' or 'universal connector'; its use cases cover extending peripheral compatibility, linking to external monitors, integrating HDMI outputs, network connections in classrooms, multimedia presentations, lab equipment interfacing, portable connectivity in meetings, technical demonstrations, flexible device interfacing, and seamless connectivity during events.",
       "navigateTo": "https://service.northeastern.edu/tech?id=sc_category&sys_id=b805ea7fdb45cdd0ca10819b13961934&catalog_id=-1",
       "useCases": ["connect peripherals", "presentation adapter", "external display connection", "ethernet connection", "multiport adapter", "usb hub"],
       "chips": [

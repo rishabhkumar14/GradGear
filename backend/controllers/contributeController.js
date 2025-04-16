@@ -7,10 +7,10 @@ exports.suggestCategory = async (req, res) => {
   try {
     const {  type, name, description, suggestion } = req.body;
 
-    if (!type || !name || !description || !suggestion) {
+    if (!type || !name || !description) {
         return res.status(400).json({
           success: false,
-          message: "Type,name,description and suggestion is required."
+          message: "Type,name and description is required."
         });
     }
 
@@ -51,11 +51,11 @@ exports.suggestCategory = async (req, res) => {
 exports.suggestResource = async (req, res) => {
     try {
       const {  type, name, category, description, link, tags} = req.body;
-  
-      if (!type || !name || !description || !category || !link || !tags) {
+
+      if (!type || !name || !description || !category) {
           return res.status(400).json({
             success: false,
-            message: "Type,name,description,category,link and tags is required."
+            message: "Type,name,description and category is required."
           });
       }
   
@@ -157,7 +157,7 @@ const getHtmlDataResource = (type, name, category, description, link, tags) => {
         </tr>
         <tr>
           <td style="padding: 8px 0;"><strong>🗂️ Tags:</strong></td>
-          <td style="padding: 8px 0;">${tags || 'N/A'}</td>
+          <td style="padding: 8px 0;">${(Array.isArray(tags) && tags.length > 0) ? tags.join(', ') : 'N/A'}</td>
         </tr>
       </table>
 

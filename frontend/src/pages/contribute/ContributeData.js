@@ -219,12 +219,16 @@ function Contribute(props) {
       image: imageFile ? imageFile.name : null,
     });
 
+    console.log("HELLO",resourceCategory);
+
+    const resourceCategoryName = getCategoryName(resourceCategory);
+    console.log(resourceCategoryName);
 
     try {
       const response = await contributeApi.suggestResource({
         type: "resource",
         name: resourceName,
-        category: resourceCategory,
+        category: resourceCategoryName,
         description: resourceDescription,
         link: resourceLink,
         tags: resourceTags
@@ -255,6 +259,11 @@ function Contribute(props) {
     // Reset form
     resetResourceForm();
   };
+
+  const getCategoryName = (categoryId) => {
+    const category = categoryListData.find((category) => category.id === categoryId);
+    return category.name;
+  }
 
   const handleCategorySubmit = async (event) => {
     event.preventDefault();

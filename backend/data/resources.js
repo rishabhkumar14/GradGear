@@ -197,37 +197,6 @@ const resourcesData = {
       chips: ["360°", "VR"],
       image: `${BASE_URL}/images/samsung_360.png`,
     },
-  ],
-  "vending accessories": [
-    {
-      id: 16,
-      name: "Bluetooth presenter",
-      description:
-        "Wireless presenter for slideshows. Includes laser pointer and programmable buttons with 30ft range. No setup required - plug and play with any computer for immediate presentation control.",
-      details:
-        "Wireless presenter for slideshows. Includes laser pointer and programmable buttons with 30ft range. No setup required - plug and play with any computer for immediate presentation control. The ergonomic design fits comfortably in hand for extended use, while the intuitive button layout allows for blind operation without looking at the device. Advanced models feature mouse functionality, volume control, and screen blackout options for maximum presentation flexibility. Extended Info: Also referred to as a 'wireless presentation remote', 'slide controller', or 'presentation clicker'; ideal for advancing slides, lecture navigation, business meeting facilitation, conference presentation control, classroom teaching, seminar guidance, training session coordination, public speaking aid, digital presentation management, interactive sessions, thesis defenses, sales pitches, keynote addresses, guest lectures, research presentations, student project demonstrations, professional development sessions, and distance education lectures.",
-      navigateTo:
-        "https://service.northeastern.edu/tech?id=sc_category&sys_id=b805ea7fdb45cdd0ca10819b13961934&catalog_id=-1",
-      locations: [
-        "Snell Library: Blue, Green, Orange: The Hub, near the front entrance",
-      ],
-      chips: ["Presentation", "Wireless"],
-      image: `${BASE_URL}/images/bluetooth_presenter.jpg`,
-    },
-    {
-      id: 17,
-      name: "Voice recorder",
-      description:
-        "Digital recorder for lectures and interviews. High-quality mic with noise cancellation and 32GB storage. Automatic transcription services available through Husky account integration.",
-      details:
-        "Digital recorder for lectures and interviews. High-quality mic with noise cancellation and 32GB storage. Automatic transcription services available through Husky account integration. Features include variable playback speed without pitch distortion, mark and jump functionality for key moments, and directional recording options to focus on specific sound sources. The rechargeable battery provides up to 40 hours of continuous recording, while USB connectivity enables quick file transfers to computers for backup and sharing. Extended Info: Also known as an 'audio recorder', 'digital dictation device', or 'sound capture device'; practical for lecture recordings, interview documentation, meeting minutes, field recordings, podcast creation, academic note-taking, voice memo capture, group discussion recording, transcription-based research, oral presentations, language learning practice, music composition, journalism field work, speech analysis, audio diary keeping, verbal research data collection, sound effect gathering, accessibility accommodations, and qualitative research interviews.",
-      navigateTo: "https://northeastern.libcal.com/reserve/videoequipment",
-      locations: [
-        "Cullinane: Red (lockers only): First-floor Student Collaboration Space",
-      ],
-      chips: ["Audio", "Recording"],
-      image: `${BASE_URL}/images/microphone.jpg`,
-    },
     {
       id: 18,
       name: "Canon EOS Camera",
@@ -246,15 +215,8 @@ const resourcesData = {
       chips: ["Panasonic", "Camera","MediaRecorder"],
       image: `${BASE_URL}/images/panasonic_cam.png`,
     },
-    {
-      id: 20,
-      name: "Tripod",
-      description: "Sturdy tripod to stabilize your camera or recording device.",
-      details: "Enhance your photography and videography by using this adjustable tripod, ensuring steady shots and reducing camera shake during shoots. This professional-grade aluminum tripod features adjustable height settings from 18 to 65 inches, quick-release plate for rapid camera mounting, bubble level indicators for precise horizontal alignment, and fluid pan-tilt head for smooth camera movements. The collapsible design with carrying case enables easy transportation across campus and to remote shooting locations. Extended Info: Also known as a 'camera stand', 'stabilization mount', or 'three-legged support'; useful for long exposure photography, interview setups, product photography, self-portrait capture, time-lapse creation, video blogging, low-light shooting, group photos, precise framing, panoramic image creation, documentary filming, livestreaming setups, wildlife observation, architectural documentation, remote trigger shooting, multi-angle coverage, stable macro photography, presentation recording, and professional portraiture.",
-      navigateTo: "https://northeastern.libcal.com/equipment/item/12493",
-      chips: ["Stand", "Tripod"],
-      image: `${BASE_URL}/images/tripod.jpg`,
-    },
+  ],
+  microphone: [
     {
       id: 21,
       name: "Zoom H4N Pro",
@@ -278,10 +240,109 @@ const resourcesData = {
       name: "Podcasting Kit",
       description: "All-in-one kit designed for podcast creation and broadcasting.",
       details: "Equipped with a condenser microphone, audio interface, and other accessories, this kit provides everything needed to produce high-quality podcasts. Includes multiple broadcast-quality microphones, a multi-channel mixer with USB output, studio-grade headphones for monitoring, adjustable boom arms, acoustic treatment panels, pop filters, and comprehensive cabling. The included software bundle features audio editing tools, sound effect libraries, and royalty-free music beds to enhance production quality. Extended Info: Also known as a 'broadcast package', 'podcast studio', or 'digital broadcasting kit'; suitable for podcast production, interview series, radio show creation, remote broadcasting, panel discussions, educational content development, narrative storytelling, commentary recording, talk show production, audio blog creation, community radio projects, current affairs programming, debate recording, audio newsletters, club announcements, speech practice, roundtable discussions, guest lecture distribution, and student journalism projects.",
-      navigateTo: "https://northeastern.libcal.com/equipment/item/101060",
+      navigateTo: "https://northeastern.libcal.com/equipment/item/53065",
       chips: ["Podcasting Kit", "Audio", "Recording"],
       image: `${BASE_URL}/images/podcast_kit.jpeg`,
     },
+    {
+      id: 17,
+      name: "Voice recorder",
+      description:
+        "Digital recorder for lectures and interviews. High-quality mic with noise cancellation and 32GB storage. Automatic transcription services available through Husky account integration.",
+      details:
+        "Digital recorder for lectures and interviews. High-quality mic with noise cancellation and 32GB storage. Automatic transcription services available through Husky account integration. Features include variable playback speed without pitch distortion, mark and jump functionality for key moments, and directional recording options to focus on specific sound sources. The rechargeable battery provides up to 40 hours of continuous recording, while USB connectivity enables quick file transfers to computers for backup and sharing. Extended Info: Also known as an 'audio recorder', 'digital dictation device', or 'sound capture device'; practical for lecture recordings, interview documentation, meeting minutes, field recordings, podcast creation, academic note-taking, voice memo capture, group discussion recording, transcription-based research, oral presentations, language learning practice, music composition, journalism field work, speech analysis, audio diary keeping, verbal research data collection, sound effect gathering, accessibility accommodations, and qualitative research interviews.",
+      navigateTo: "https://northeastern.libcal.com/equipment/item/42345",
+      locations: [
+        "Cullinane: Red (lockers only): First-floor Student Collaboration Space",
+      ],
+      chips: ["Audio", "Recording"],
+      image: `${BASE_URL}/images/microphone.jpg`,
+    },
+  ],
+  "vending accessories": [
+    {
+      id: 16,
+      name: "Bluetooth presenter",
+      description:
+        "Wireless presenter for slideshows. Includes laser pointer and programmable buttons with 30ft range. No setup required - plug and play with any computer for immediate presentation control.",
+      details:
+        "Wireless presenter for slideshows. Includes laser pointer and programmable buttons with 30ft range. No setup required - plug and play with any computer for immediate presentation control. The ergonomic design fits comfortably in hand for extended use, while the intuitive button layout allows for blind operation without looking at the device. Advanced models feature mouse functionality, volume control, and screen blackout options for maximum presentation flexibility. Extended Info: Also referred to as a 'wireless presentation remote', 'slide controller', or 'presentation clicker'; ideal for advancing slides, lecture navigation, business meeting facilitation, conference presentation control, classroom teaching, seminar guidance, training session coordination, public speaking aid, digital presentation management, interactive sessions, thesis defenses, sales pitches, keynote addresses, guest lectures, research presentations, student project demonstrations, professional development sessions, and distance education lectures.",
+      navigateTo:
+        "https://service.northeastern.edu/tech?id=sc_category&sys_id=b805ea7fdb45cdd0ca10819b13961934&catalog_id=-1",
+      locations: [
+        "Snell Library: Blue, Green, Orange: The Hub, near the front entrance",
+      ],
+      chips: ["Presentation", "Wireless"],
+      image: `${BASE_URL}/images/bluetooth_presenter.jpg`,
+    },
+    // {
+    //   id: 17,
+    //   name: "Voice recorder",
+    //   description:
+    //     "Digital recorder for lectures and interviews. High-quality mic with noise cancellation and 32GB storage. Automatic transcription services available through Husky account integration.",
+    //   details:
+    //     "Digital recorder for lectures and interviews. High-quality mic with noise cancellation and 32GB storage. Automatic transcription services available through Husky account integration. Features include variable playback speed without pitch distortion, mark and jump functionality for key moments, and directional recording options to focus on specific sound sources. The rechargeable battery provides up to 40 hours of continuous recording, while USB connectivity enables quick file transfers to computers for backup and sharing. Extended Info: Also known as an 'audio recorder', 'digital dictation device', or 'sound capture device'; practical for lecture recordings, interview documentation, meeting minutes, field recordings, podcast creation, academic note-taking, voice memo capture, group discussion recording, transcription-based research, oral presentations, language learning practice, music composition, journalism field work, speech analysis, audio diary keeping, verbal research data collection, sound effect gathering, accessibility accommodations, and qualitative research interviews.",
+    //   navigateTo: "https://northeastern.libcal.com/reserve/videoequipment",
+    //   locations: [
+    //     "Cullinane: Red (lockers only): First-floor Student Collaboration Space",
+    //   ],
+    //   chips: ["Audio", "Recording"],
+    //   image: `${BASE_URL}/images/microphone.jpg`,
+    // },
+    // {
+    //   id: 18,
+    //   name: "Canon EOS Camera",
+    //   description: "Capture high-quality images and videos with this versatile DSLR camera.",
+    //   details: "Ideal for photography and videography projects, the Canon EOS Camera offers manual controls, interchangeable lenses, and high-resolution imaging capabilities. This professional-grade DSLR features a large APS-C sensor for exceptional image quality, advanced autofocus system with eye-tracking technology, and 4K video recording capabilities. The camera includes multiple custom shooting modes, RAW file support, and compatibility with Canon's extensive lens ecosystem for maximum creative flexibility. Extended Info: Also known as a 'Canon DSLR', 'professional camera', or 'digital SLR'; suitable for professional photography, portrait sessions, sports documentation, landscape photography, product shoots, documentary filmmaking, photojournalism, wildlife observation, architectural photography, fashion shoots, event coverage, wedding photography, time-lapse creation, nighttime astronomy, macro photography, street photography, fine art creation, campus newspaper work, and marketing material development.",
+    //   navigateTo: "https://northeastern.libcal.com/equipment/item/9589",
+    //   chips: ["Canon","Camera","MediaRecorder"],
+    //   image: `${BASE_URL}/images/sony_EOS.jpeg`,
+    // },
+    // {
+    //   id: 19,
+    //   name: "Panasonic Camera",
+    //   description: "Record professional-grade videos with this high-definition Panasonic camera.",
+    //   details: "Suitable for various recording needs, this Panasonic camera provides excellent video quality and user-friendly features for both beginners and professionals. The camera incorporates built-in image stabilization for smooth handheld recording, high dynamic range for balanced exposure in challenging lighting, and high-frame-rate options for slow-motion effects. Audio features include XLR inputs for professional microphones, manual audio level controls, and headphone monitoring capabilities for precise sound capture. Extended Info: Also known as a 'Panasonic video camera', 'professional camcorder', or 'broadcast-quality recorder'; appropriate for documentary projects, interview recording, live event coverage, promotional video creation, instructional content, performance documentation, news gathering, social media content creation, corporate video production, sports analysis, film student projects, independent filmmaking, video essays, travel documentation, theatrical recording, case study visualization, experimental video art, ethnographic research, and process demonstration.",  
+    //   navigateTo: ["https://northeastern.libcal.com/equipment/item/12059"],
+    //   chips: ["Panasonic", "Camera","MediaRecorder"],
+    //   image: `${BASE_URL}/images/panasonic_cam.png`,
+    // },
+    {
+      id: 20,
+      name: "Tripod",
+      description: "Sturdy tripod to stabilize your camera or recording device.",
+      details: "Enhance your photography and videography by using this adjustable tripod, ensuring steady shots and reducing camera shake during shoots. This professional-grade aluminum tripod features adjustable height settings from 18 to 65 inches, quick-release plate for rapid camera mounting, bubble level indicators for precise horizontal alignment, and fluid pan-tilt head for smooth camera movements. The collapsible design with carrying case enables easy transportation across campus and to remote shooting locations. Extended Info: Also known as a 'camera stand', 'stabilization mount', or 'three-legged support'; useful for long exposure photography, interview setups, product photography, self-portrait capture, time-lapse creation, video blogging, low-light shooting, group photos, precise framing, panoramic image creation, documentary filming, livestreaming setups, wildlife observation, architectural documentation, remote trigger shooting, multi-angle coverage, stable macro photography, presentation recording, and professional portraiture.",
+      navigateTo: "https://northeastern.libcal.com/equipment/item/12493",
+      chips: ["Stand", "Tripod"],
+      image: `${BASE_URL}/images/tripod.jpg`,
+    },
+    // {
+    //   id: 21,
+    //   name: "Zoom H4N Pro",
+    //   description: "Professional 4-track audio recorder with built-in X/Y microphones.",
+    //   details: "The Zoom H4N Pro offers high-fidelity audio recording with advanced features like overdubbing, effects, and multiple recording modes, making it ideal for musicians and filmmakers. This field recorder captures pristine 24-bit/96kHz audio with extremely low noise floor and provides phantom power for professional condenser microphones. Multiple recording formats including WAV and MP3 allow flexibility for different project requirements, while the rugged construction withstands outdoor recording conditions. Extended Info: Also referred to as an 'audio field recorder', 'multi-track sound device', or 'portable studio'; ideal for film sound recording, music performance capture, podcast production, ambient sound collection, voice-over recording, sound design, foley creation, band rehearsal documentation, interview recording, lecture capture, environmental sound research, audio storytelling, sound effect gathering, on-location production audio, concert recording, oral history projects, sound mixing, acoustic analysis, and radio journalism.",
+    //   navigateTo: "https://northeastern.libcal.com/equipment/item/53062",
+    //   chips: ["Audio", "Recording"],
+    //   image: `${BASE_URL}/images/zoh_microphone.jpg`,
+    // },
+    // {
+    //   id: 22,
+    //   name: "Recording Kit",
+    //   description: "Comprehensive kit for high-quality audio recording sessions.",
+    //   details: "Includes essential equipment such as microphones, headphones, and audio interfaces, perfect for capturing clear and professional sound in various settings. The complete kit contains condenser and dynamic microphones with stands, closed-back monitoring headphones, pop filters, shock mounts, an audio interface with multiple inputs, and all necessary cables and adapters. Setup instructions and basic recording techniques are included for users new to audio production. Extended Info: Also known as an 'audio production package', 'sound recording bundle', or 'professional audio kit'; applicable for podcast recording, interview sessions, voice-over production, music demos, dialogue capture, audiobook narration, radio drama creation, livestream audio, conference recordings, focus group documentation, singing practice, instrument recording, sound effect creation, language learning exercises, speech therapy documentation, audio for video production, distance learning content, research interviews, and acoustic performances.",
+    //   navigateTo: "https://northeastern.libcal.com/equipment/item/101060",
+    //   chips: ["Recording Kit", "Audio", "Recording"],
+    //   image: `${BASE_URL}/images/record_kit.jpg`,
+    // },
+    // {
+    //   id: 25,
+    //   name: "Podcasting Kit",
+    //   description: "All-in-one kit designed for podcast creation and broadcasting.",
+    //   details: "Equipped with a condenser microphone, audio interface, and other accessories, this kit provides everything needed to produce high-quality podcasts. Includes multiple broadcast-quality microphones, a multi-channel mixer with USB output, studio-grade headphones for monitoring, adjustable boom arms, acoustic treatment panels, pop filters, and comprehensive cabling. The included software bundle features audio editing tools, sound effect libraries, and royalty-free music beds to enhance production quality. Extended Info: Also known as a 'broadcast package', 'podcast studio', or 'digital broadcasting kit'; suitable for podcast production, interview series, radio show creation, remote broadcasting, panel discussions, educational content development, narrative storytelling, commentary recording, talk show production, audio blog creation, community radio projects, current affairs programming, debate recording, audio newsletters, club announcements, speech practice, roundtable discussions, guest lecture distribution, and student journalism projects.",
+    //   navigateTo: "https://northeastern.libcal.com/equipment/item/101060",
+    //   chips: ["Podcasting Kit", "Audio", "Recording"],
+    //   image: `${BASE_URL}/images/podcast_kit.jpeg`,
+    // },
   ],
   "working with gpus": [
     {

@@ -83,6 +83,142 @@ function preprocessQuery(query) {
 }
 
 /**
+ * Extracts and flattens all relevant text data from a resource for improved semantic search
+ * @param {Object} resource - Resource object
+ * @param {string} category - Resource category
+ * @returns {string} - Flattened text representation
+ */
+function extractResourceText(resource, category) {
+  const parts = [];
+  
+  // Add basic information
+  parts.push(resource.name || '');
+  parts.push(category || '');
+  parts.push(resource.description || '');
+  
+  // Add detailed information
+  parts.push(resource.details || '');
+  
+  // Add chips (tags)
+  if (resource.chips && Array.isArray(resource.chips)) {
+    parts.push(resource.chips.join(' '));
+  }
+  
+  // Add locations
+  if (resource.locations && Array.isArray(resource.locations)) {
+    parts.push(resource.locations.join(' '));
+  }
+  
+  // Add any other relevant fields
+  if (resource.duration) parts.push(resource.duration);
+  
+  // Return the flattened text representation, removing extra whitespace
+  return parts.join(' ').trim().replace(/\s+/g, ' ');
+}
+
+/**
+ * Generates intents from resources by extracting common use cases and key terms
+ * @param {Object} resourcesData - Resource data object organized by categories
+ * @returns {Object} - Intent dictionary with potential query patterns and categories
+ */
+function generateIntentDictionary(resourcesData) {
+  const intentDict = {};
+  
+  // Extract intents from each resource
+  for (const category in resourcesData) {
+    const resources = resourcesData[category];
+    if (!Array.isArray(resources)) continue;
+    
+    for (const resource of resources) {
+      // Extract common names/aliases from the "Also known as" section in details
+      if (resource.details) {
+        const alsoKnownMatch = resource.details.match(/Also (?:known as|called|referred to as|termed) ['"](.*?)['"],(?:.*?)or ['"](.*?)['"];/i);
+        if (alsoKnownMatch) {
+          const alternateNames = [alsoKnownMatch[1], alsoKnownMatch[2]].filter(Boolean);
+          alternateNames.forEach(name => {
+            if (name && name.length > 3) { // Only use meaningful alternate names
+              intentDict[name.toLowerCase()] = category;
+            }
+          });
+        }
+        
+        // Extract use cases from the details text
+        const useCasesMatch = resource.details.match(/use cases (?:include|encompass|cover) (.*?)(?:;|\.)/i);
+        if (useCasesMatch && useCasesMatch[1]) {
+          const useCases = useCasesMatch[1].split(',').map(useCase => useCase.trim());
+          useCases.forEach(useCase => {
+            const keywords = useCase.toLowerCase()
+              .replace(/ing\b/g, '') // Remove trailing -ing to match different forms
+              .split(/\s+/)
+              .filter(word => word.length > 3); // Only use meaningful keywords
+              
+            keywords.forEach(keyword => {
+              if (!intentDict[keyword]) {
+                intentDict[keyword] = category;
+              }
+            });
+          });
+        }
+      }
+      
+      // Add resource name and potential semantic variations
+      const nameWords = resource.name.toLowerCase().split(/\s+/).filter(word => word.length > 3);
+      nameWords.forEach(word => {
+        intentDict[word] = category;
+      });
+      
+      // Add chips as potential intents
+      if (resource.chips && Array.isArray(resource.chips)) {
+        resource.chips.forEach(chip => {
+          if (chip.length > 3) {
+            intentDict[chip.toLowerCase()] = category;
+          }
+        });
+      }
+    }
+  }
+  
+  // Add common problem/solution mappings (extracted from use cases and problems the resources solve)
+  const problemSolutionMap = {
+    "died": ["charger", "power bank", "lockers"],
+    "no power": ["charger", "power bank", "lockers"],
+    "charging": ["charger", "power bank", "lockers"],
+    "battery": ["charger", "power bank", "lockers"],
+    "out of power": ["charger", "power bank", "lockers"],
+    "battery low": ["charger", "power bank", "lockers"],
+    "dead laptop": ["charger", "power bank", "lockers"],
+    "needs power": ["charger", "power bank", "lockers"],
+    "ran out": ["charger", "power bank", "lockers"],
+    "small": ["accessories", "camera"],
+    "tiny": ["accessories"],
+    "microscopic": ["accessories"],
+    "record": ["camera", "vending accessories"],
+    "audio": ["vending accessories"],
+    "podcast": ["vending accessories"],
+    "film": ["camera", "vending accessories"],
+    "video": ["camera", "vending accessories"],
+    "present": ["vending accessories", "accessories"],
+    "slides": ["vending accessories"],
+    "meeting": ["spaces"],
+    "group": ["spaces"],
+    "study": ["spaces"],
+    "compute": ["working with gpus"],
+    "learning": ["working with gpus"],
+    "ai": ["working with gpus"],
+    "model": ["working with gpus"]
+  };
+  
+  // Merge problem solution map into intent dictionary
+  for (const [problem, categories] of Object.entries(problemSolutionMap)) {
+    categories.forEach(category => {
+      intentDict[problem] = category;
+    });
+  }
+  
+  return intentDict;
+}
+
+/**
  * Initializes embeddings for all resources in the data
  * @param {Object} resourcesData - Resource data object organized by categories
  * @returns {Promise<void>}
@@ -102,12 +238,8 @@ async function initializeResourceEmbeddings(resourcesData) {
     for (const resource of resources) {
       resourceCount++;
       
-      // Create rich text representation for embedding by combining various fields
-      const chipText = resource.chips && Array.isArray(resource.chips) ? resource.chips.join(' ') : '';
-      const locationText = resource.locations && Array.isArray(resource.locations) ? resource.locations.join(' ') : '';
-      
-      // Enhanced text representation with all available semantic information
-      const text = `${resource.name} ${category} ${resource.description || ''} ${chipText} ${locationText}`.trim().replace(/\s+/g, ' ');
+      // Create rich text representation using the enhanced extraction function
+      const text = extractResourceText(resource, category);
       
       if (!text) {
         console.warn(`Skipping resource "${resource.name}" (Category: ${category}) due to empty text`);
@@ -116,8 +248,8 @@ async function initializeResourceEmbeddings(resourcesData) {
 
       try {
         const embedding = await generateEmbeddings(text);
-        // Add embedding and original category to the resource object
-        tempResourceList.push({ ...resource, category, embedding });
+        // Add embedding, original category, and text representation to the resource object
+        tempResourceList.push({ ...resource, category, embedding, textRepresentation: text });
         successCount++;
         
         if (successCount % 10 === 0 || successCount === 1) {
@@ -141,7 +273,7 @@ async function initializeResourceEmbeddings(resourcesData) {
  * @param {number} maxResults - Maximum number of results to return
  * @returns {Promise<Array>} - Array of resource objects with similarity scores
  */
-async function findSimilarResources(query, threshold = 0.65, maxResults = 3) {
+async function findSimilarResources(query, threshold = 0.6, maxResults = 5) {
   if (!isEmbeddingsInitialized) {
     throw new Error("Resource embeddings have not been initialized");
   }
@@ -175,6 +307,74 @@ async function findSimilarResources(query, threshold = 0.65, maxResults = 3) {
 }
 
 /**
+ * Analyzes a user query for known intents or problems
+ * @param {string} query - User query
+ * @param {Object} intentDict - Intent dictionary
+ * @returns {Array} - Array of potential category matches
+ */
+function analyzeQueryIntent(query, intentDict) {
+  const processedQuery = preprocessQuery(query.toLowerCase());
+  const queryWords = processedQuery.split(/\s+/);
+  const matches = [];
+  
+  // Look for multi-word matches first
+  for (const key of Object.keys(intentDict)) {
+    if (key.includes(' ') && processedQuery.includes(key)) {
+      matches.push({
+        intent: key,
+        category: intentDict[key],
+        score: 1.0 // Direct match gets highest score
+      });
+    }
+  }
+  
+  // Then check for single word matches
+  if (matches.length === 0) {
+    for (const word of queryWords) {
+      if (intentDict[word]) {
+        matches.push({
+          intent: word,
+          category: intentDict[word],
+          score: 0.8 // Single word match gets lower score
+        });
+      }
+    }
+  }
+  
+  // Also check for partial matches for common problems
+  if (matches.length === 0) {
+    const commonProblems = [
+      { patterns: ["out of power", "no battery", "dead battery", "low battery"], categories: ["charger", "lockers"] },
+      { patterns: ["need to record", "make video", "capture video"], categories: ["camera", "vending accessories"] },
+      { patterns: ["small objects", "see small", "magnify"], categories: ["accessories"] },
+      { patterns: ["present", "slides", "presentation"], categories: ["vending accessories", "accessories"] },
+      { patterns: ["study group", "meeting space", "group work"], categories: ["spaces"] }
+    ];
+    
+    for (const problem of commonProblems) {
+      for (const pattern of problem.patterns) {
+        if (processedQuery.includes(pattern) || query.toLowerCase().includes(pattern)) {
+          problem.categories.forEach(category => {
+            matches.push({
+              intent: pattern,
+              category: category,
+              score: 0.9 // Problem pattern match gets high score
+            });
+          });
+        }
+      }
+    }
+  }
+  
+  // Sort by score
+  matches.sort((a, b) => b.score - a.score);
+  
+  // Return unique categories
+  const uniqueCategories = [...new Set(matches.map(m => m.category))];
+  return uniqueCategories;
+}
+
+/**
  * Handles a user query and generates a response using RAG
  * @param {string} query - User query
  * @param {Object} resourcesData - Resource data object
@@ -191,128 +391,127 @@ async function handleQuery(query, resourcesData) {
       await initializeResourceEmbeddings(resourcesData);
     }
     
+    // Generate intent dictionary from resources
+    const intentDict = generateIntentDictionary(resourcesData);
+    
     // Preprocess the query
     const processedQuery = preprocessQuery(query);
     console.log(`Original query: "${query}"`);
     console.log(`Processed query: "${processedQuery}"`);
     
-    // Create a keyword-to-category map for direct matches
-    const keywordMap = {
-      // Spaces & Rooms
-      "study room": "spaces", "study space": "spaces", "room": "spaces", 
-      "classroom": "spaces", "meeting room": "spaces", "conference": "spaces",
-      "reserve room": "spaces", "book room": "spaces", "snell": "spaces",
-      
-      // Power & Charging
-      "power bank": "lockers", "charger": "charger", "charging": "charger",
-      "adapter": "charger", "magsafe": "charger", "charge": "charger",
-      "power": "charger", "surface charger": "charger", "usb-c": "charger",
-      
-      // Computing
-      "laptop": "laptop", "computer": "laptop", "macbook": "laptop", 
-      "apple laptop": "laptop", "windows laptop": "laptop", "surface": "laptop",
-      
-      // Peripherals & Equipment
-      "camera": "camera", "theta": "camera", "360": "camera", "handycam": "camera",
-      "camcorder": "camera", "record video": "camera", "recording": "camera",
-      
-      // Accessories
-      "projector": "accessories", "microscope": "accessories", "bluetooth presenter": "vending accessories",
-      "voice recorder": "vending accessories", "audio recorder": "vending accessories", 
-      "presenter": "vending accessories", "pointer": "vending accessories",
-      
-      // Computing Resources
-      "gpu": "working with gpus", "gpus": "working with gpus", "high performance": "working with gpus",
-      "computing": "working with gpus", "hpc": "working with gpus", "cluster": "working with gpus",
-      "machine learning": "working with gpus", "deep learning": "working with gpus"
-    };
+    // Analyze query for intents and problems
+    const potentialCategories = analyzeQueryIntent(query, intentDict);
+    console.log(`Potential categories based on intent analysis: ${potentialCategories.join(', ')}`);
     
-    // Check for direct category matches based on keywords
-    let directMatchCategory = null;
-    const words = processedQuery.split(/\s+/);
+    let matchedResources = [];
+    let matchType = "none";
     
-    // Check for multi-word phrases first
-    for (const [keyword, category] of Object.entries(keywordMap)) {
-      if (keyword.includes(' ') && processedQuery.includes(keyword)) {
-        directMatchCategory = category;
-        console.log(`Direct multi-word match found: "${keyword}" -> ${category}`);
-        break;
+    // If we have category matches from intent analysis, use those
+    if (potentialCategories.length > 0) {
+      matchType = "intent";
+      
+      for (const category of potentialCategories) {
+        // Get resources from the matched category
+        if (resourcesData[category]) {
+          const categoryResources = resourcesData[category];
+          console.log(`Found ${categoryResources.length} resources in category: ${category}`);
+          
+          // Add resources from this category
+          matchedResources = [...matchedResources, ...categoryResources.map(resource => ({ 
+            resource: { ...resource, category }, 
+            score: 0.9 // High score for intent-based matching
+          }))];
+        }
       }
-    }
-    
-    // If no multi-word match, check single words
-    if (!directMatchCategory) {
-      for (const word of words) {
-        if (keywordMap[word]) {
-          directMatchCategory = keywordMap[word];
-          console.log(`Direct single-word match found: "${word}" -> ${directMatchCategory}`);
-          break;
+      
+      // Further refine within the matched categories using semantic search
+      if (matchedResources.length > 0) {
+        try {
+          // Create an embedding for the query
+          const queryEmbedding = await generateEmbeddings(query);
+          
+          // Calculate similarity for each matched resource
+          matchedResources = matchedResources.map(item => {
+            // Generate embedding if not already in cache
+            const cachedResource = resourceEmbeddingsCache.find(r => r.id === item.resource.id);
+            if (cachedResource) {
+              const similarity = cosineSimilarity(queryEmbedding, cachedResource.embedding);
+              return { 
+                resource: item.resource, 
+                similarity,
+                // Combine intent score with similarity score, weighted towards intent
+                score: (item.score * 0.7) + (similarity * 0.3)
+              };
+            }
+            return item;
+          });
+          
+          // Sort by combined score
+          matchedResources.sort((a, b) => b.score - a.score);
+          
+          // Limit to top results
+          matchedResources = matchedResources.slice(0, 5);
+          
+          console.log(`Refined to ${matchedResources.length} resources using semantic search`);
+        } catch (error) {
+          console.warn("Error refining with semantic search, using intent matches only:", error.message);
         }
       }
     }
     
-    // If direct category match found, get resources from that category
-    if (directMatchCategory && resourcesData[directMatchCategory]) {
-      const categoryResources = resourcesData[directMatchCategory];
-      console.log(`Using direct category match: ${directMatchCategory} (${categoryResources.length} resources)`);
+    // If no matches found via intent analysis, use pure semantic search
+    if (matchedResources.length === 0) {
+      console.log("No intent matches found, using semantic search...");
+      const similarResults = await findSimilarResources(query);
       
-      // Generate response using Gemini with category match context
-      const resourceDetails = categoryResources
-        .map(resource => `- **${resource.name}**: ${resource.description.split('.')[0]}. ${resource.navigateTo && resource.navigateTo !== '#' ? `[Book Here](${resource.navigateTo})` : 'No booking link available.'}`)
-        .join("\n");
-      
-      const prompt = `You are a helpful assistant for GradGear, a university resource portal. 
-Answer the user's query: "${query}"
-
-Base your response ONLY on the following resources from the "${directMatchCategory}" category:
-${resourceDetails}
-
-Your response should:
-1. Be conversational and helpful
-2. Present relevant resources in a clear Markdown list format 
-3. Use bold (**Resource Name**) for resource names
-4. Include booking links where available
-5. Focus on resources most relevant to the specific query
-6. Be concise but informative (no more than 150 words)`;
-
-      const result = await generativeModel.generateContent(prompt);
-      const responseText = result.response.text();
-      
-      return {
-        success: true,
-        response: responseText,
-        relatedResources: categoryResources,
-        matchType: "category"
-      };
+      if (similarResults.length > 0) {
+        matchType = "semantic";
+        matchedResources = similarResults;
+        console.log(`Found ${matchedResources.length} semantically similar resources`);
+      }
     }
     
-    // If no direct category match, use semantic search via embeddings
-    console.log("No direct category match found, using semantic search...");
-    const similarResults = await findSimilarResources(query);
-    
-    if (similarResults.length > 0) {
-      console.log(`Found ${similarResults.length} semantically similar resources`);
-      
+    // If we have matches from either method, format and return them
+    if (matchedResources.length > 0) {
       // Format resources for the prompt
-      const resourceDetails = similarResults
-        .map(({ resource, similarity }) => 
-          `- **${resource.name}** (Category: ${resource.category}, Similarity: ${similarity.toFixed(2)}): ${resource.description.split('.')[0]}. ${resource.navigateTo && resource.navigateTo !== '#' ? `[Book Here](${resource.navigateTo})` : 'No booking link available.'}`
-        )
-        .join("\n");
+      const resourceDetails = matchedResources
+        .map((item, index) => {
+          const resource = item.resource;
+          const score = item.similarity || item.score;
+          const scoreDisplay = score ? score.toFixed(2) : 'N/A';
+          
+          // If a booking link exists and is not just a placeholder, show as a Markdown link
+          const bookingLink = resource.navigateTo && resource.navigateTo !== '#' 
+            ? `[Book Here!](${resource.navigateTo})` 
+            : 'No booking link available.';
+          
+          return `${index + 1}. **${resource.name}** (Category: ${resource.category}${score ? `, Relevance: ${scoreDisplay}` : ''}):
+             Description: ${resource.description}
+             Details: ${resource.details ? resource.details.slice(0, 250) + "..." : 'No details available.'}
+             Booking Link: ${bookingLink}`;
+        })
+        .join("\n\n");
       
       const prompt = `You are a helpful assistant for GradGear, a university resource portal.
-Answer the user's query: "${query}"
+Carefully analyze the user's query: "${query}"
 
-Based on semantic similarity, I found these potentially relevant resources:
+Based on analysis, I found these potentially relevant resources:
 ${resourceDetails}
 
-Your response should:
-1. Be conversational and helpful
-2. Present the resources in a clear Markdown list format, starting with the most relevant one
-3. Use bold (**Resource Name**) for resource names
-4. Include booking links where available
-5. Briefly explain why each resource might be relevant to their query
-6. Be concise but informative (no more than a 150 words)`;
+Your task is to:
+1. Determine which resources TRULY match what the user is looking for, considering both explicit and implicit needs
+2. If the user describes a problem (like "laptop died"), identify what they actually need (like a charger, not a new laptop)
+3. Only include resources that directly address their need - don't include irrelevant options
+4. Use the full resource details to understand each resource's purpose and capabilities
+5. Be conversational and helpful in your response
+6. Present the MOST RELEVANT resources first in a clear Markdown list
+7. Use bold (**Resource Name**) for resource names
+8. Include booking links where available
+9. Briefly explain why each resource is relevant to their specific query
+10. Aim for 150-200 words maximum
+11. Err on the side of suggestion related resources in unclear cases
+
+Your goal is to truly understand what the user needs (even if they express it vaguely) and provide the most helpful suggestions.`;
 
       const result = await generativeModel.generateContent(prompt);
       const responseText = result.response.text();
@@ -320,8 +519,8 @@ Your response should:
       return {
         success: true,
         response: responseText,
-        relatedResources: similarResults.map(item => item.resource),
-        matchType: "semantic"
+        relatedResources: matchedResources.map(item => item.resource),
+        matchType
       };
     }
     
@@ -336,7 +535,7 @@ Unfortunately, we couldn't find any specific resources matching this query in ou
 Provide a friendly, helpful response that:
 1. Acknowledges we don't have an exact match for their specific request
 2. Suggests they might try different keywords or be more specific
-3. Mentions they can contribute missing resources via the Contribute page. The link for the contribute page is ${BASE_URL}/contribute. Hide the link behind the text "Contribute page"
+3. Mentions they can contribute missing resources via the Contribute page. The link for the contribute page is [Contribute page](${BASE_URL}/contribute).
 4. Offers to help with any other resource-related questions
 5. Is concise (no more than 100 words)`;
 

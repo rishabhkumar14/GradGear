@@ -31,25 +31,25 @@ const resourcesData = {
       image: `${BASE_URL}/images/room.jpg`,
     },
   ],
-  lockers: [
-    {
-      id: 3,
-      name: "Laptop power bank",
-      description:
-        "Available at International Village Basement and EXP floors. Provides up to 8 hours of charge for most laptop models. Compatible with most major brands including Apple, Dell, and Lenovo devices.",
-      details:
-        "Available at International Village Basement and EXP floors. Provides up to 8 hours of charge for most laptop models. Compatible with most major brands including Apple, Dell, and Lenovo devices. These high-capacity power banks feature multiple output ports (USB-C, USB-A) with fast-charging capabilities and LED indicators showing remaining power levels. Loan periods typically last 24 hours with potential for renewal if demand allows. Extended Info: Also known as 'portable battery pack', 'mobile power station', or 'laptop battery booster'; use cases include in-class recharging, mobile workstations, emergency power supply, extended study sessions, outdoor presentations, backup power during events, travel-ready power, on-the-go device support, temporary charging in labs, quick power-ups between sessions, powering devices during campus outages, fieldwork support, multi-day conferences, outdoor study groups, and collaborative work in non-traditional spaces.",
-      locations: [
-        "International Village Basement",
-        "Second floor of EXP next to the student printers",
-        "Third floor of EXP next to the student printers",
-      ],
-      navigateTo:
-        "https://service.northeastern.edu/tech?id=kb_article&sysparm_article=KB000018991",
-      chips: ["Power", "Charging", "Portable"],
-      image: `${BASE_URL}/images/laptop_PB.png`,
-    },
-  ],
+  // lockers: [
+  //   {
+  //     id: 3,
+  //     name: "Laptop power bank",
+  //     description:
+  //       "Available at International Village Basement and EXP floors. Provides up to 8 hours of charge for most laptop models. Compatible with most major brands including Apple, Dell, and Lenovo devices.",
+  //     details:
+  //       "Available at International Village Basement and EXP floors. Provides up to 8 hours of charge for most laptop models. Compatible with most major brands including Apple, Dell, and Lenovo devices. These high-capacity power banks feature multiple output ports (USB-C, USB-A) with fast-charging capabilities and LED indicators showing remaining power levels. Loan periods typically last 24 hours with potential for renewal if demand allows. Extended Info: Also known as 'portable battery pack', 'mobile power station', or 'laptop battery booster'; use cases include in-class recharging, mobile workstations, emergency power supply, extended study sessions, outdoor presentations, backup power during events, travel-ready power, on-the-go device support, temporary charging in labs, quick power-ups between sessions, powering devices during campus outages, fieldwork support, multi-day conferences, outdoor study groups, and collaborative work in non-traditional spaces.",
+  //     locations: [
+  //       "International Village Basement",
+  //       "Second floor of EXP next to the student printers",
+  //       "Third floor of EXP next to the student printers",
+  //     ],
+  //     navigateTo:
+  //       "https://service.northeastern.edu/tech?id=kb_article&sysparm_article=KB000018991",
+  //     chips: ["Power", "Charging", "Portable"],
+  //     image: `${BASE_URL}/images/laptop_PB.png`,
+  //   },
+  // ],
   charger: [
     {
       id: 4,
@@ -161,6 +161,23 @@ const resourcesData = {
       navigateTo: "https://cils.northeastern.edu/facilities/",
       chips: ["Lab", "Research"],
       image: `${BASE_URL}/images/microscope.png`,
+    },
+    {
+      id: 3,
+      name: "Laptop power bank",
+      description:
+        "Available at International Village Basement and EXP floors. Provides up to 8 hours of charge for most laptop models. Compatible with most major brands including Apple, Dell, and Lenovo devices.",
+      details:
+        "Available at International Village Basement and EXP floors. Provides up to 8 hours of charge for most laptop models. Compatible with most major brands including Apple, Dell, and Lenovo devices. These high-capacity power banks feature multiple output ports (USB-C, USB-A) with fast-charging capabilities and LED indicators showing remaining power levels. Loan periods typically last 24 hours with potential for renewal if demand allows. Extended Info: Also known as 'portable battery pack', 'mobile power station', or 'laptop battery booster'; use cases include in-class recharging, mobile workstations, emergency power supply, extended study sessions, outdoor presentations, backup power during events, travel-ready power, on-the-go device support, temporary charging in labs, quick power-ups between sessions, powering devices during campus outages, fieldwork support, multi-day conferences, outdoor study groups, and collaborative work in non-traditional spaces.",
+      locations: [
+        "International Village Basement",
+        "Second floor of EXP next to the student printers",
+        "Third floor of EXP next to the student printers",
+      ],
+      navigateTo:
+        "https://service.northeastern.edu/tech?id=kb_article&sysparm_article=KB000018991",
+      chips: ["Power", "Charging", "Portable"],
+      image: `${BASE_URL}/images/laptop_PB.png`,
     },
   ],
   camera: [

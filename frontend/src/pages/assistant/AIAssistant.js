@@ -9,7 +9,6 @@ import {
   Avatar,
   List,
   ListItem,
-  ListItemText,
   ListItemAvatar,
   Divider,
   CircularProgress,
@@ -17,6 +16,9 @@ import {
   Chip,
   Card,
   CardContent,
+  Tooltip,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import SearchIcon from "@mui/icons-material/Search";
@@ -59,6 +61,62 @@ function AIAssistant(props) {
   const messagesEndRef = React.useRef(null);
   const [isListening, setIsListening] = React.useState(false);
   const [error, setError] = React.useState(null);
+  const [speechError, setSpeechError] = React.useState(null);
+  const [showSnackbar, setShowSnackbar] = React.useState(false);
+  const [snackbarMessage, setSnackbarMessage] = React.useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = React.useState("info");
+
+  // Reference to speech recognition instance
+  const recognitionRef = React.useRef(null);
+
+  // Initialize speech recognition on component mount
+  React.useEffect(() => {
+    // Check if browser supports the Web Speech API
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      setSpeechError("Voice input is not supported in your browser.");
+      return;
+    }
+
+    // Initialize the speech recognition
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognitionRef.current = new SpeechRecognition();
+    recognitionRef.current.continuous = false;
+    recognitionRef.current.interimResults = false;
+    recognitionRef.current.lang = 'en-US';
+
+    // Set up event listeners
+    recognitionRef.current.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setInputValue(transcript);
+      setIsListening(false);
+      
+      // Show confirmation
+      setSnackbarMessage(`Heard: "${transcript}"`);
+      setSnackbarSeverity("success");
+      setShowSnackbar(true);
+    };
+
+    recognitionRef.current.onerror = (event) => {
+      console.error("Speech recognition error", event.error);
+      setIsListening(false);
+      
+      // Show error
+      setSnackbarMessage(`Couldn't capture voice: ${event.error}`);
+      setSnackbarSeverity("error");
+      setShowSnackbar(true);
+    };
+
+    recognitionRef.current.onend = () => {
+      setIsListening(false);
+    };
+
+    // Clean up on unmount
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+    };
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -201,15 +259,40 @@ function AIAssistant(props) {
   };
 
   const toggleListening = () => {
-    setIsListening(!isListening);
-    
-    if (!isListening) {
-      // Simulate a voice input (in a real app, this would use the Web Speech API)
-      setTimeout(() => {
-        setInputValue("Where can I find a laptop power bank?");
-        setIsListening(false);
-      }, 2000);
+    if (speechError) {
+      // Show error if speech recognition isn't supported
+      setSnackbarMessage(speechError);
+      setSnackbarSeverity("error");
+      setShowSnackbar(true);
+      return;
     }
+
+    if (isListening) {
+      // Stop listening
+      recognitionRef.current?.stop();
+      setIsListening(false);
+    } else {
+      // Start listening
+      try {
+        recognitionRef.current?.start();
+        setIsListening(true);
+        setSnackbarMessage("Listening... Speak now.");
+        setSnackbarSeverity("info");
+        setShowSnackbar(true);
+      } catch (error) {
+        console.error("Error starting speech recognition:", error);
+        setSnackbarMessage("Could not start voice input. Please try again.");
+        setSnackbarSeverity("error");
+        setShowSnackbar(true);
+      }
+    }
+  };
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setShowSnackbar(false);
   };
 
   const formatTimestamp = (date) => {
@@ -375,7 +458,7 @@ function AIAssistant(props) {
                     {/* Related resources */}
                     {message.relatedResources && message.relatedResources.length > 0 && (
                       <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                        {message.relatedResources.slice(0, 2).map((resource) => (
+                        {message.relatedResources.map((resource) => (
                           <Card
                             key={resource.id}
                             sx={{
@@ -561,13 +644,15 @@ function AIAssistant(props) {
               ),
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton
-                    color={isListening ? "error" : "default"}
-                    onClick={toggleListening}
-                    edge="end"
-                  >
-                    {isListening ? <KeyboardVoiceIcon /> : <MicIcon />}
-                  </IconButton>
+                  <Tooltip title={isListening ? "Stop listening" : "Voice input"}>
+                    <IconButton
+                      color={isListening ? "error" : "default"}
+                      onClick={toggleListening}
+                      edge="end"
+                    >
+                      {isListening ? <KeyboardVoiceIcon /> : <MicIcon />}
+                    </IconButton>
+                  </Tooltip>
                 </InputAdornment>
               ),
             }}
@@ -582,6 +667,22 @@ function AIAssistant(props) {
           </IconButton>
         </Box>
       </Paper>
+
+      {/* Snackbar for voice recognition feedback */}
+      <Snackbar 
+        open={showSnackbar} 
+        autoHideDuration={3000} 
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={handleCloseSnackbar} 
+          severity={snackbarSeverity} 
+          sx={{ width: '100%' }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

@@ -83,7 +83,7 @@ function Resources(props) {
   const [resourcesData, setResourcesData] = React.useState({});
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
-  
+
   const scrollContainerRefs = React.useRef({});
   const [visibleButtons, setVisibleButtons] = React.useState({});
   const [componentMounted, setComponentMounted] = React.useState(false);
@@ -668,7 +668,7 @@ function Resources(props) {
             variant="contained"
             color="primary"
             size="small"
-            startIcon={<FilterListIcon />}
+            // startIcon={<FilterListIcon />}
             sx={{
               ml: { xs: 0, sm: 2 },
               mt: { xs: 1, sm: 0 },
@@ -696,9 +696,7 @@ function Resources(props) {
         <Paper
           sx={{ p: { xs: 2, sm: 4 }, borderRadius: "8px", textAlign: "center" }}
         >
-          <ErrorOutlineIcon
-            sx={{ fontSize: 48, color: "error.main", mb: 2 }}
-          />
+          <ErrorOutlineIcon sx={{ fontSize: 48, color: "error.main", mb: 2 }} />
           <Typography
             variant="h6"
             color="error"
@@ -718,101 +716,103 @@ function Resources(props) {
       )}
 
       {/* Display each category */}
-      {!loading && !error && Object.keys(filteredResources).length > 0 ? (
-        Object.keys(filteredResources).map((category) => (
-          <Box key={category} sx={{ mb: { xs: 2, sm: 4 } }}>
-            {/* Enhanced category header with icon and count */}
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                mb: expandedCategories[category] ? { xs: 1, sm: 2 } : 0,
-                pb: 1,
-                borderBottom: `2px solid ${getCategoryColor(category)}`,
-                cursor: "pointer",
-                userSelect: "none",
-                // Mobile padding adjustments
-                px: { xs: 0.5, sm: 0 },
-              }}
-              onClick={() => toggleCategory(category)}
-            >
-              <Avatar
+      {!loading && !error && Object.keys(filteredResources).length > 0
+        ? Object.keys(filteredResources).map((category) => (
+            <Box key={category} sx={{ mb: { xs: 2, sm: 4 } }}>
+              {/* Enhanced category header with icon and count */}
+              <Box
                 sx={{
-                  bgcolor: getCategoryColor(category),
-                  mr: 1.5,
-                  width: { xs: 32, sm: 36 },
-                  height: { xs: 32, sm: 36 },
+                  display: "flex",
+                  alignItems: "center",
+                  mb: expandedCategories[category] ? { xs: 1, sm: 2 } : 0,
+                  pb: 1,
+                  borderBottom: `2px solid ${getCategoryColor(category)}`,
+                  cursor: "pointer",
+                  userSelect: "none",
+                  // Mobile padding adjustments
+                  px: { xs: 0.5, sm: 0 },
                 }}
+                onClick={() => toggleCategory(category)}
               >
-                {getCategoryIcon(category)}
-              </Avatar>
-              <Box sx={{ flexGrow: 1 }}>
-                <Typography
-                  variant="h5"
-                  component="h2"
+                <Avatar
                   sx={{
-                    textTransform: "capitalize",
-                    fontSize: { xs: "1.1rem", sm: "1.4rem" },
-                    fontWeight: 600,
-                    color: getCategoryColor(category),
-                    lineHeight: 1.2,
+                    bgcolor: getCategoryColor(category),
+                    mr: 1.5,
+                    width: { xs: 32, sm: 36 },
+                    height: { xs: 32, sm: 36 },
                   }}
                 >
-                  {category}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ fontSize: { xs: "0.7rem", sm: "0.75rem" } }}
+                  {getCategoryIcon(category)}
+                </Avatar>
+                <Box sx={{ flexGrow: 1 }}>
+                  <Typography
+                    variant="h5"
+                    component="h2"
+                    sx={{
+                      textTransform: "capitalize",
+                      fontSize: { xs: "1.1rem", sm: "1.4rem" },
+                      fontWeight: 600,
+                      color: getCategoryColor(category),
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    {category}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ fontSize: { xs: "0.7rem", sm: "0.75rem" } }}
+                  >
+                    {filteredResources[category].length} items available
+                  </Typography>
+                </Box>
+                {/* Expand/Collapse Icon */}
+                <IconButton
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleCategory(category);
+                  }}
+                  sx={{
+                    color: getCategoryColor(category),
+                  }}
                 >
-                  {filteredResources[category].length} items available
-                </Typography>
+                  {expandedCategories[category] ? (
+                    <ExpandLessIcon />
+                  ) : (
+                    <ExpandMoreIcon />
+                  )}
+                </IconButton>
               </Box>
-              {/* Expand/Collapse Icon */}
-              <IconButton
-                size="small"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleCategory(category);
-                }}
-                sx={{
-                  color: getCategoryColor(category),
-                }}
-              >
-                {expandedCategories[category] ? (
-                  <ExpandLessIcon />
-                ) : (
-                  <ExpandMoreIcon />
-                )}
-              </IconButton>
-            </Box>
 
-            {/* Collapsible content */}
-            <Collapse
-              in={expandedCategories[category]}
-              timeout="auto"
-              unmountOnExit
+              {/* Collapsible content */}
+              <Collapse
+                in={expandedCategories[category]}
+                timeout="auto"
+                unmountOnExit
+              >
+                {renderResourceCards(filteredResources[category], category)}
+              </Collapse>
+            </Box>
+          ))
+        : !loading &&
+          !error && (
+            <Paper
+              sx={{
+                p: { xs: 2, sm: 4 },
+                borderRadius: "8px",
+                textAlign: "center",
+              }}
             >
-              {renderResourceCards(filteredResources[category], category)}
-            </Collapse>
-          </Box>
-        ))
-      ) : (
-        !loading &&
-        !error && (
-          <Paper
-            sx={{ p: { xs: 2, sm: 4 }, borderRadius: "8px", textAlign: "center" }}
-          >
-            <Typography
-              variant="h6"
-              color="text.secondary"
-              sx={{ fontSize: { xs: "1rem", sm: "1.25rem" } }}
-            >
-              No resources found matching your search. Try different keywords.
-            </Typography>
-          </Paper>
-        )
-      )}
+              <Typography
+                variant="h6"
+                color="text.secondary"
+                sx={{ fontSize: { xs: "1rem", sm: "1.25rem" } }}
+              >
+                No resources found matching your search. Try different keywords.
+              </Typography>
+            </Paper>
+          )}
     </Box>
   );
 }

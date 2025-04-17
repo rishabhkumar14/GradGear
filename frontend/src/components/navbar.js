@@ -41,7 +41,7 @@ export default function Navbar(props) {
 
   // Navigation items array
   const navItems = [
-    { text: "Homepage", icon: <HomeIcon />, path: "/homepage" },
+    // { text: "Homepage", icon: <HomeIcon />, path: "/homepage" },
     { text: "Resources", icon: <FolderIcon />, path: "/resources" },
     { text: "AI-Assistant", icon: <SmartToyIcon />, path: "/ai-assistant" },
     { text: "About Us", icon: <InfoIcon />, path: "/aboutus" },
@@ -270,7 +270,7 @@ export default function Navbar(props) {
             />
           </Box>
 
-          <Avatar
+          {/* <Avatar
             alt="User"
             src={rishabhAvtar}
             sx={{
@@ -279,7 +279,7 @@ export default function Navbar(props) {
               marginLeft: "auto",
               marginRight: { xs: 0, sm: "10px" },
             }}
-          />
+          /> */}
         </Toolbar>
       </AppBar>
 

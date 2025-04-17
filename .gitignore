@@ -23,3 +23,4 @@ yarn-error.log*
 
 # Ignore CSV/test exports (optional)
 *.csv
+node_modules

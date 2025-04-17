@@ -13,6 +13,9 @@ import userIcon from "../../assets/headers/ic_glass_users.png";
 import VendorData from "./HomePageTable";
 
 function Homepage(props) {
+  // State to control VendorData visibility
+  const [showVendorData, setShowVendorData] = React.useState(false);
+
   let cardMetrics = [
     {
       title: "Navigator",
@@ -299,8 +302,11 @@ function Homepage(props) {
               bgcolor: "background.paper",
               borderRadius: 2,
               overflow: { xs: "auto", sm: "hidden" },
+              filter: "blur(8px)", // Apply blur effect to the container
+              pointerEvents: "none", // Prevent interaction with blurred content
             }}
           >
+            {/* VendorData component is rendered but visually blurred */}
             <VendorData />
           </Box>
         </Grid>

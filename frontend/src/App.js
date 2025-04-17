@@ -14,7 +14,6 @@ import {
   Navigate,
 } from "react-router-dom";
 
-
 function App() {
   const [drawerOpen, setDrawerOpen] = useState(true); // State to track drawer status
 
@@ -31,7 +30,7 @@ function App() {
           <Route path="/" element={<Navigate to="/homepage" />} />
           <Route
             path="/homepage"
-            element={<Homepage drawerOpen={drawerOpen} />}
+            element={<Inventory drawerOpen={drawerOpen} />}
           />
           <Route
             path="/resources"
@@ -50,7 +49,7 @@ function App() {
             element={<Contribute drawerOpen={drawerOpen} />}
           />
           {/* Wildcard route for non-existing routes */}
-          <Route path="*" element={<Navigate to="/homepage" />} />
+          <Route path="*" element={<Navigate to="/resources" />} />
         </Routes>
       </div>
     </Router>

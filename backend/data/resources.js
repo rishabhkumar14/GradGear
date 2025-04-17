@@ -15,7 +15,7 @@ const resourcesData = {
         "Reserve study rooms in Snell Library for group work or individual study. Available for 3-hour blocks with multimedia support and whiteboard facilities. Perfect for project meetings and study sessions. Each room is soundproofed and equipped with power outlets, high-speed Wi-Fi, and presentation capabilities. Rooms vary in size from intimate 2-person spaces to larger 12-person conference rooms, with some featuring specialized equipment for media production. Extended Info: Also known as 'Snell Reservations', 'Library Rooms', or 'Snell Scheduling'; ideal for group discussions, solo study, brainstorming sessions, exam preparations, tutoring meetings, collaborative projects, quiet study retreats, conference-style meetings, interactive seminars, academic workshops, rehearsing presentations, virtual interviews, online exams, team project planning, research collaborations, thesis writing, coding sessions, and video production projects.",
       navigateTo: "https://northeastern.libcal.com/reserve/",
       chips: ["Study Room", "Group Work", "Quiet Space"],
-      hasViewStatus: true,
+      // hasViewStatus: true,
       image: `${BASE_URL}/images/snell_library.jpg`,
     },
     {
@@ -27,7 +27,7 @@ const resourcesData = {
         "Book classrooms and collaborative spaces across campus. Reservations can be made up to 2 weeks in advance with faculty approval. Includes AV equipment and flexible seating arrangements. Spaces range from traditional classrooms to innovative collaboration zones with movable furniture and interactive displays. Most rooms feature document cameras, projectors, and enhanced acoustics for optimal learning environments. Extended Info: Also referred to as 'Classroom Booking', 'Campus Space Reservation', or 'Venue Scheduling'; suitable for lectures, seminars, interactive workshops, team meetings, group projects, training sessions, conferences, roundtable discussions, presentation rehearsals, networking events, student organization gatherings, club meetings, guest speaker events, panel discussions, mock interviews, debate practice, hackathons, product demonstrations, and interdisciplinary collaborations.",
       navigateTo: "https://dashboard.robinpowered.com/Northeastern/",
       chips: ["Classroom", "Meeting Space"],
-      hasViewStatus: true,
+      // hasViewStatus: true,
       image: `${BASE_URL}/images/room.jpg`,
     },
   ],
@@ -232,6 +232,15 @@ const resourcesData = {
       chips: ["Panasonic", "Camera","MediaRecorder"],
       image: `${BASE_URL}/images/panasonic_cam.png`,
     },
+    // {
+    //   id: 19,
+    //   name: "Panasonic Camera",
+    //   description: "Record professional-grade videos with this high-definition Panasonic camera.",
+    //   details: "Suitable for various recording needs, this Panasonic camera provides excellent video quality and user-friendly features for both beginners and professionals. The camera incorporates built-in image stabilization for smooth handheld recording, high dynamic range for balanced exposure in challenging lighting, and high-frame-rate options for slow-motion effects. Audio features include XLR inputs for professional microphones, manual audio level controls, and headphone monitoring capabilities for precise sound capture. Extended Info: Also known as a 'Panasonic video camera', 'professional camcorder', or 'broadcast-quality recorder'; appropriate for documentary projects, interview recording, live event coverage, promotional video creation, instructional content, performance documentation, news gathering, social media content creation, corporate video production, sports analysis, film student projects, independent filmmaking, video essays, travel documentation, theatrical recording, case study visualization, experimental video art, ethnographic research, and process demonstration.",  
+    //   navigateTo: ["https://northeastern.libcal.com/equipment/item/12059"],
+    //   chips: ["Panasonic", "Camera","MediaRecorder"],
+    //   image: `${BASE_URL}/images/panasonic_cam.png`,
+    // },
   ],
   microphone: [
     {

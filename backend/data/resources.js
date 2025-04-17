@@ -190,7 +190,7 @@ const resourcesData = {
         "360-degree camera for immersive photography. Creates panoramic images and videos for virtual reality applications. Perfect for architectural documentation, event coverage, and interactive media projects. This specialized camera captures a complete spherical image with no blind spots, utilizing dual ultra-wide-angle lenses that automatically stitch content together. Features include 4K video recording, spatial audio capture, live streaming capabilities, and smartphone control through a dedicated app. Extended Info: Also known as a '360° panoramic camera', 'spherical imaging device', or 'omnidirectional recorder'; suitable for immersive photography, virtual tour creation, environmental mapping, event documentation, creative storytelling, site surveys, interactive media production, digital panoramas, VR content capture, artistic photography, real estate visualization, cultural heritage documentation, remote location monitoring, educational virtual field trips, experimental filmmaking, interactive exhibits, spatial analysis, event marketing, and immersive journalism.",
       navigateTo: "https://service.northeastern.edu/tech?id=sc_cat_item&sys_id=670f0615db769810a37cd206ca961965",
       chips: ["360°", "Photography"],
-      image: `${BASE_URL}/images/ricoh_theta.jpeg`,
+      image: `${BASE_URL}/images/ricoh_theta.jpg`,
     },
     {
       id: 14,

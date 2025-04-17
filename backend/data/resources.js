@@ -182,6 +182,15 @@ const resourcesData = {
   ],
   camera: [
     {
+      id: 18,
+      name: "Canon EOS Camera",
+      description: "Capture high-quality images and videos with this versatile DSLR camera.",
+      details: "Ideal for photography and videography projects, the Canon EOS Camera offers manual controls, interchangeable lenses, and high-resolution imaging capabilities. This professional-grade DSLR features a large APS-C sensor for exceptional image quality, advanced autofocus system with eye-tracking technology, and 4K video recording capabilities. The camera includes multiple custom shooting modes, RAW file support, and compatibility with Canon's extensive lens ecosystem for maximum creative flexibility. Extended Info: Also known as a 'Canon DSLR', 'professional camera', or 'digital SLR'; suitable for professional photography, portrait sessions, sports documentation, landscape photography, product shoots, documentary filmmaking, photojournalism, wildlife observation, architectural photography, fashion shoots, event coverage, wedding photography, time-lapse creation, nighttime astronomy, macro photography, street photography, fine art creation, campus newspaper work, and marketing material development.",
+      navigateTo: "https://northeastern.libcal.com/equipment/item/9589",
+      chips: ["Canon","Camera","MediaRecorder"],
+      image: `${BASE_URL}/images/sony_EOS.jpeg`,
+    },
+    {
       id: 13,
       name: "Ricoh Theta",
       description:
@@ -213,15 +222,6 @@ const resourcesData = {
       navigateTo: "https://service.northeastern.edu/tech?id=sc_cat_item&sys_id=20f5c100dbfe1410a37cd206ca961913",
       chips: ["360°", "VR"],
       image: `${BASE_URL}/images/samsung_360.png`,
-    },
-    {
-      id: 18,
-      name: "Canon EOS Camera",
-      description: "Capture high-quality images and videos with this versatile DSLR camera.",
-      details: "Ideal for photography and videography projects, the Canon EOS Camera offers manual controls, interchangeable lenses, and high-resolution imaging capabilities. This professional-grade DSLR features a large APS-C sensor for exceptional image quality, advanced autofocus system with eye-tracking technology, and 4K video recording capabilities. The camera includes multiple custom shooting modes, RAW file support, and compatibility with Canon's extensive lens ecosystem for maximum creative flexibility. Extended Info: Also known as a 'Canon DSLR', 'professional camera', or 'digital SLR'; suitable for professional photography, portrait sessions, sports documentation, landscape photography, product shoots, documentary filmmaking, photojournalism, wildlife observation, architectural photography, fashion shoots, event coverage, wedding photography, time-lapse creation, nighttime astronomy, macro photography, street photography, fine art creation, campus newspaper work, and marketing material development.",
-      navigateTo: "https://northeastern.libcal.com/equipment/item/9589",
-      chips: ["Canon","Camera","MediaRecorder"],
-      image: `${BASE_URL}/images/sony_EOS.jpeg`,
     },
     {
       id: 19,

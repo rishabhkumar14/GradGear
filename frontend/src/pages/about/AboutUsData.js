@@ -45,6 +45,8 @@ const projectInfo = {
     "Material UI",
     "JavaScript",
     "Node.js",
+    "Express",
+    "SMTP Integration",
     "AI Assistant Integration",
   ],
   highlights: [

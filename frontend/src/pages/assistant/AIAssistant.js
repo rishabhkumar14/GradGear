@@ -28,7 +28,7 @@ import MicIcon from "@mui/icons-material/Mic";
 import KeyboardVoiceIcon from "@mui/icons-material/KeyboardVoice";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown from "react-markdown";
 
 // Import API service
 import aiChatService from "../../services/aiChatService";
@@ -72,24 +72,28 @@ function AIAssistant(props) {
   // Initialize speech recognition on component mount
   React.useEffect(() => {
     // Check if browser supports the Web Speech API
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    if (
+      !("webkitSpeechRecognition" in window) &&
+      !("SpeechRecognition" in window)
+    ) {
       setSpeechError("Voice input is not supported in your browser.");
       return;
     }
 
     // Initialize the speech recognition
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
     recognitionRef.current = new SpeechRecognition();
     recognitionRef.current.continuous = false;
     recognitionRef.current.interimResults = false;
-    recognitionRef.current.lang = 'en-US';
+    recognitionRef.current.lang = "en-US";
 
     // Set up event listeners
     recognitionRef.current.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
       setInputValue(transcript);
       setIsListening(false);
-      
+
       // Show confirmation
       setSnackbarMessage(`Heard: "${transcript}"`);
       setSnackbarSeverity("success");
@@ -99,7 +103,7 @@ function AIAssistant(props) {
     recognitionRef.current.onerror = (event) => {
       console.error("Speech recognition error", event.error);
       setIsListening(false);
-      
+
       // Show error
       setSnackbarMessage(`Couldn't capture voice: ${event.error}`);
       setSnackbarSeverity("error");
@@ -147,7 +151,7 @@ function AIAssistant(props) {
     try {
       // Send the query to the AI chat service
       const response = await aiChatService.sendQuery(userMessage.content);
-      
+
       if (response.success) {
         const assistantResponse = {
           role: "assistant",
@@ -160,29 +164,34 @@ function AIAssistant(props) {
         setConversation((prev) => [...prev, assistantResponse]);
       } else {
         // Handle error response
-        setError(response.error || "Failed to get a response. Please try again.");
-        
+        setError(
+          response.error || "Failed to get a response. Please try again."
+        );
+
         const errorResponse = {
           role: "assistant",
-          content: response.error || "I'm sorry, I encountered an error while processing your request. Please try again or rephrase your question.",
+          content:
+            response.error ||
+            "I'm sorry, I encountered an error while processing your request. Please try again or rephrase your question.",
           timestamp: new Date(),
           isError: true,
         };
-        
+
         setConversation((prev) => [...prev, errorResponse]);
       }
     } catch (error) {
       console.error("Error sending message:", error);
-      
+
       setError("An unexpected error occurred. Please try again.");
-      
+
       const errorResponse = {
         role: "assistant",
-        content: "I'm sorry, I encountered an error while processing your request. Please try again or rephrase your question.",
+        content:
+          "I'm sorry, I encountered an error while processing your request. Please try again or rephrase your question.",
         timestamp: new Date(),
         isError: true,
       };
-      
+
       setConversation((prev) => [...prev, errorResponse]);
     } finally {
       setIsLoading(false);
@@ -198,7 +207,7 @@ function AIAssistant(props) {
 
   const handleSuggestionClick = (suggestion) => {
     setInputValue(suggestion);
-    
+
     // Small delay to update UI before sending
     setTimeout(() => {
       const userMessage = {
@@ -213,8 +222,9 @@ function AIAssistant(props) {
       setError(null);
 
       // Send the suggestion to the AI service
-      aiChatService.sendQuery(suggestion)
-        .then(response => {
+      aiChatService
+        .sendQuery(suggestion)
+        .then((response) => {
           if (response.success) {
             const assistantResponse = {
               role: "assistant",
@@ -226,30 +236,35 @@ function AIAssistant(props) {
 
             setConversation((prev) => [...prev, assistantResponse]);
           } else {
-            setError(response.error || "Failed to get a response. Please try again.");
-            
+            setError(
+              response.error || "Failed to get a response. Please try again."
+            );
+
             const errorResponse = {
               role: "assistant",
-              content: response.error || "I'm sorry, I encountered an error while processing your request. Please try again or rephrase your question.",
+              content:
+                response.error ||
+                "I'm sorry, I encountered an error while processing your request. Please try again or rephrase your question.",
               timestamp: new Date(),
               isError: true,
             };
-            
+
             setConversation((prev) => [...prev, errorResponse]);
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("Error processing suggestion:", error);
-          
+
           setError("An unexpected error occurred. Please try again.");
-          
+
           const errorResponse = {
             role: "assistant",
-            content: "I'm sorry, I encountered an error while processing your request. Please try again or rephrase your question.",
+            content:
+              "I'm sorry, I encountered an error while processing your request. Please try again or rephrase your question.",
             timestamp: new Date(),
             isError: true,
           };
-          
+
           setConversation((prev) => [...prev, errorResponse]);
         })
         .finally(() => {
@@ -289,7 +304,7 @@ function AIAssistant(props) {
   };
 
   const handleCloseSnackbar = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
     setShowSnackbar(false);
@@ -330,9 +345,9 @@ function AIAssistant(props) {
         }}
       >
         <Typography variant="h4" component="h1" sx={{ fontSize: "1.8rem" }}>
-          Resource Assistant
+          GradBot{" "}
         </Typography>
-        <Button
+        {/* <Button
           variant="outlined"
           color="primary"
           size="small"
@@ -342,7 +357,7 @@ function AIAssistant(props) {
           }}
         >
           Help
-        </Button>
+        </Button> */}
       </Box>
 
       <Paper
@@ -403,8 +418,10 @@ function AIAssistant(props) {
                       sx={{
                         p: 2,
                         bgcolor:
-                          message.role === "assistant" 
-                            ? message.isError ? "#ffebee" : "#ffffff" 
+                          message.role === "assistant"
+                            ? message.isError
+                              ? "#ffebee"
+                              : "#ffffff"
                             : "#e3f2fd",
                         borderRadius: "12px",
                         boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
@@ -412,33 +429,69 @@ function AIAssistant(props) {
                     >
                       {message.role === "assistant" ? (
                         message.isError ? (
-                          <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 1 }}>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "flex-start",
+                              mb: 1,
+                            }}
+                          >
                             <ErrorOutlineIcon color="error" sx={{ mr: 1 }} />
-                            <Typography variant="body1">{message.content}</Typography>
+                            <Typography variant="body1">
+                              {message.content}
+                            </Typography>
                           </Box>
                         ) : (
-                          <ReactMarkdown 
+                          <ReactMarkdown
                             components={{
-                              p: (props) => <Typography variant="body1" {...props} sx={{ mb: 1 }} />,
-                              ul: (props) => <Box component="ul" sx={{ ml: 2, mt: 1, mb: 1 }} {...props} />,
-                              li: (props) => <Typography component="li" variant="body1" sx={{ mb: 0.5 }} {...props} />,
-                              a: (props) => <Button 
-                                component="a" 
-                                variant="text" 
-                                color="primary"
-                                size="small"
-                                href={props.href}
-                                target="_blank"
-                                sx={{ p: 0, minWidth: 'auto', textTransform: 'none', fontWeight: 'bold' }}
-                                {...props}
-                              />
+                              p: (props) => (
+                                <Typography
+                                  variant="body1"
+                                  {...props}
+                                  sx={{ mb: 1 }}
+                                />
+                              ),
+                              ul: (props) => (
+                                <Box
+                                  component="ul"
+                                  sx={{ ml: 2, mt: 1, mb: 1 }}
+                                  {...props}
+                                />
+                              ),
+                              li: (props) => (
+                                <Typography
+                                  component="li"
+                                  variant="body1"
+                                  sx={{ mb: 0.5 }}
+                                  {...props}
+                                />
+                              ),
+                              a: (props) => (
+                                <Button
+                                  component="a"
+                                  variant="text"
+                                  color="primary"
+                                  size="small"
+                                  href={props.href}
+                                  target="_blank"
+                                  sx={{
+                                    p: 0,
+                                    minWidth: "auto",
+                                    textTransform: "none",
+                                    fontWeight: "bold",
+                                  }}
+                                  {...props}
+                                />
+                              ),
                             }}
                           >
                             {message.content}
                           </ReactMarkdown>
                         )
                       ) : (
-                        <Typography variant="body1">{message.content}</Typography>
+                        <Typography variant="body1">
+                          {message.content}
+                        </Typography>
                       )}
                     </Paper>
 
@@ -456,99 +509,132 @@ function AIAssistant(props) {
                     </Typography>
 
                     {/* Related resources */}
-                    {message.relatedResources && message.relatedResources.length > 0 && (
-                      <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                        {message.relatedResources.map((resource) => (
-                          <Card
-                            key={resource.id}
-                            sx={{
-                              display: "flex",
-                              cursor: resource.navigateTo && resource.navigateTo !== "#" ? "pointer" : "default",
-                              transition: "transform 0.2s",
-                              "&:hover": {
-                                transform: "translateY(-2px)",
-                                boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-                              },
-                              borderRadius: "8px",
-                              overflow: "hidden",
-                            }}
-                            onClick={() => handleResourceClick(resource.navigateTo)}
-                          >
-                            <Box
+                    {message.relatedResources &&
+                      message.relatedResources.length > 0 && (
+                        <Box
+                          sx={{
+                            mt: 2,
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 1.5,
+                          }}
+                        >
+                          {message.relatedResources.map((resource) => (
+                            <Card
+                              key={resource.id}
                               sx={{
-                                width: 80,
-                                height: 80,
-                                flexShrink: 0,
                                 display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                bgcolor: "#f5f5f5",
+                                cursor:
+                                  resource.navigateTo &&
+                                  resource.navigateTo !== "#"
+                                    ? "pointer"
+                                    : "default",
+                                transition: "transform 0.2s",
+                                "&:hover": {
+                                  transform: "translateY(-2px)",
+                                  boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+                                },
+                                borderRadius: "8px",
+                                overflow: "hidden",
                               }}
+                              onClick={() =>
+                                handleResourceClick(resource.navigateTo)
+                              }
                             >
-                              <img
-                                src={resource.image || laptopImg}
-                                alt={resource.name}
-                                style={{
-                                  width: "100%",
-                                  height: "100%",
-                                  objectFit: "cover",
-                                }}
-                                onError={(e) => {
-                                  e.target.src = laptopImg; // Fallback image
-                                }}
-                              />
-                            </Box>
-                            <CardContent sx={{ py: 1, flex: 1 }}>
-                              <Typography variant="subtitle1" fontWeight="medium">
-                                {resource.name}
-                              </Typography>
-                              <Typography
-                                variant="body2"
-                                color="text.secondary"
+                              <Box
                                 sx={{
-                                  mb: 0.5,
-                                  display: "-webkit-box",
-                                  WebkitLineClamp: 2,
-                                  WebkitBoxOrient: "vertical",
-                                  overflow: "hidden",
+                                  width: 80,
+                                  height: 80,
+                                  flexShrink: 0,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  bgcolor: "#f5f5f5",
                                 }}
                               >
-                                {resource.description?.split('.')[0]}.
-                              </Typography>
-                              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <Box sx={{ display: "flex", gap: 0.5 }}>
-                                  {resource.chips?.slice(0, 2).map((chip, idx) => (
-                                    <Chip
-                                      key={idx}
-                                      label={chip}
-                                      size="small"
-                                      sx={{
-                                        height: 20,
-                                        fontSize: "0.7rem",
-                                      }}
-                                    />
-                                  ))}
-                                </Box>
-                                {resource.navigateTo && resource.navigateTo !== "#" && (
-                                  <Button
-                                    variant="text"
-                                    color="primary"
-                                    size="small"
-                                    sx={{ p: 0, minHeight: 0, fontSize: "0.75rem" }}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      window.open(resource.navigateTo, "_blank");
-                                    }}
-                                  >
-                                    View
-                                  </Button>
-                                )}
+                                <img
+                                  src={resource.image || laptopImg}
+                                  alt={resource.name}
+                                  style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    objectFit: "cover",
+                                  }}
+                                  onError={(e) => {
+                                    e.target.src = laptopImg; // Fallback image
+                                  }}
+                                />
                               </Box>
-                            </CardContent>
-                          </Card>
-                        ))}
-                      </Box>
-                    )}
+                              <CardContent sx={{ py: 1, flex: 1 }}>
+                                <Typography
+                                  variant="subtitle1"
+                                  fontWeight="medium"
+                                >
+                                  {resource.name}
+                                </Typography>
+                                <Typography
+                                  variant="body2"
+                                  color="text.secondary"
+                                  sx={{
+                                    mb: 0.5,
+                                    display: "-webkit-box",
+                                    WebkitLineClamp: 2,
+                                    WebkitBoxOrient: "vertical",
+                                    overflow: "hidden",
+                                  }}
+                                >
+                                  {resource.description?.split(".")[0]}.
+                                </Typography>
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <Box sx={{ display: "flex", gap: 0.5 }}>
+                                    {resource.chips
+                                      ?.slice(0, 2)
+                                      .map((chip, idx) => (
+                                        <Chip
+                                          key={idx}
+                                          label={chip}
+                                          size="small"
+                                          sx={{
+                                            height: 20,
+                                            fontSize: "0.7rem",
+                                          }}
+                                        />
+                                      ))}
+                                  </Box>
+                                  {resource.navigateTo &&
+                                    resource.navigateTo !== "#" && (
+                                      <Button
+                                        variant="text"
+                                        color="primary"
+                                        size="small"
+                                        sx={{
+                                          p: 0,
+                                          minHeight: 0,
+                                          fontSize: "0.75rem",
+                                        }}
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          window.open(
+                                            resource.navigateTo,
+                                            "_blank"
+                                          );
+                                        }}
+                                      >
+                                        View
+                                      </Button>
+                                    )}
+                                </Box>
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </Box>
+                      )}
                   </Box>
                 </ListItem>
                 {index < conversation.length - 1 && (
@@ -644,7 +730,9 @@ function AIAssistant(props) {
               ),
               endAdornment: (
                 <InputAdornment position="end">
-                  <Tooltip title={isListening ? "Stop listening" : "Voice input"}>
+                  <Tooltip
+                    title={isListening ? "Stop listening" : "Voice input"}
+                  >
                     <IconButton
                       color={isListening ? "error" : "default"}
                       onClick={toggleListening}
@@ -669,16 +757,16 @@ function AIAssistant(props) {
       </Paper>
 
       {/* Snackbar for voice recognition feedback */}
-      <Snackbar 
-        open={showSnackbar} 
-        autoHideDuration={3000} 
+      <Snackbar
+        open={showSnackbar}
+        autoHideDuration={3000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
-        <Alert 
-          onClose={handleCloseSnackbar} 
-          severity={snackbarSeverity} 
-          sx={{ width: '100%' }}
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
         >
           {snackbarMessage}
         </Alert>

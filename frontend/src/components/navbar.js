@@ -43,7 +43,7 @@ export default function Navbar(props) {
   const navItems = [
     // { text: "Homepage", icon: <HomeIcon />, path: "/homepage" },
     { text: "Resources", icon: <FolderIcon />, path: "/resources" },
-    { text: "AI-Assistant", icon: <SmartToyIcon />, path: "/ai-assistant" },
+    { text: "GradBot", icon: <SmartToyIcon />, path: "/ai-assistant" },
     { text: "About Us", icon: <InfoIcon />, path: "/aboutus" },
   ];
 

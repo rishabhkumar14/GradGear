@@ -126,9 +126,9 @@ function AIAssistant(props) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  React.useEffect(() => {
-    scrollToBottom();
-  }, [conversation]);
+  // React.useEffect(() => {
+  //   scrollToBottom();
+  // }, [conversation]);
 
   const handleInputChange = (event) => {
     setInputValue(event.target.value);

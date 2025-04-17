@@ -49,7 +49,7 @@ const projectInfo = {
   ],
   highlights: [
     "Intuitive resource discovery and categorization",
-    "Real-time availability tracking",
+    "Easy navigation to a resource",
     "AI-powered assistance for finding the right resources",
     "Multi-device responsive design",
   ],

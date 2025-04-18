@@ -1,209 +1,232 @@
-# GradGear
+# GradGear - University Resource Portal
 
-GradGear is an AI-powered platform designed to help university students discover, locate, and reserve campus resources that are often overlooked due to being scattered across departments. The platform simplifies access to various technology, equipment, and spaces, ensuring users have the tools they need for skill development and career growth.
-
-![GradGear Logo](src/assets/logo.png)
+GradGear is a comprehensive web application that helps university students and staff discover, browse, and book various campus resources - from study spaces to technical equipment.
 
 ## Table of Contents
 
-- [Overview](#overview)
+- [Project Overview](#project-overview)
 - [Features](#features)
-- [Tech Stack](#tech-stack)
 - [Installation](#installation)
-- [Usage](#usage)
-- [Project Structure](#project-structure)
-- [Components](#components)
-- [API Integration](#api-integration)
-- [Future Enhancements](#future-enhancements)
-- [Contributing](#contributing)
-- [Team](#team)
-- [License](#license)
+- [AI Chat System](#ai-chat-system)
+- [API Documentation](#api-documentation)
+- [Troubleshooting](#troubleshooting)
 
-## Overview
+## Project Overview
 
-GradGear was developed for the Human-Computer Interaction course (CS-5340) at Northeastern University. The platform serves as a centralized hub for various campus resources, making them more accessible and easier to discover through intuitive navigation and AI assistance.
+GradGear serves as a centralized platform for accessing various university resources, solving the common problem of scattered information about available equipment and spaces. The application features an intelligent AI assistant that helps users find exactly what they need through natural language queries.
+
+### Key Features
+
+- **Resource Discovery**: Browse a comprehensive catalog of university resources
+- **Intelligent Search**: Find resources using natural language queries
+- **Booking System**: Reserve resources directly through the platform
+- **AI Assistant**: Get personalized recommendations through conversation
+- **Category Navigation**: Browse resources by type (spaces, laptops, chargers, etc.)
+
+### Technology Stack
+
+- **Frontend**: React.js, Material UI
+- **Backend**: Node.js, Express
+- **AI**: Google Generative AI (Gemini)
+- **Data Storage**: Local .data file
 
 ## Features
 
-- **Resource Discovery and Navigation**
+### Resource Categories
 
-  - Browse resources organized by categories
-  - Collapsible category sections
-  - Search functionality with filtering options
-  - Detailed resource cards with key information
+GradGear organizes resources into several categories:
 
-- **AI Assistant**
+1. **Spaces**: Study rooms, meeting spaces, and classrooms
+2. **Lockers**: Power banks and storage options
+3. **Chargers**: Various device chargers (MagSafe, USB-C, Surface)
+4. **Laptops**: Computing devices (Windows, Mac, Surface)
+5. **Accessories**: Projectors, microscopes, and other equipment
+6. **Cameras**: Recording devices and photography equipment
+7. **Vending Accessories**: Smaller items like presenters and voice recorders
+8. **GPU Computing**: High-performance computing resources
 
-  - Natural language interaction to find resources
-  - Contextual resource recommendations
-  - Suggested questions for easy starting points
-  - Voice input capability
+### AI Chat Assistant
 
-- **User Dashboard**
+The AI assistant helps users find resources through conversational interaction:
 
-  - Overview of available resources
-  - Usage statistics and metrics
-  - Quick access to frequently used resources
-
-- **Mobile Responsive Design**
-
-  - Optimized for all device sizes
-  - Touch-friendly interface
-  - Adaptive layouts for different screen sizes
-
-- **User Feedback System**
-  - Rating mechanism for resources and platform
-  - Feedback submission for feature requests and improvements
-  - Contact form for direct communication
-
-## Tech Stack
-
-- **Frontend**
-  - React.js
-  - Material UI
-  - JavaScript (ES6+)
-- **State Management**
-
-  - React Hooks
-
-- **Routing**
-
-  - React Router
-
-- **Styling**
-
-  - Material UI theming and styled components
-  - Responsive design principles
-
-- **AI Integration**
-  - Custom AI assistant interface (ready for backend integration)
+- Understands natural language queries
+- Handles vague or indirect requests
+- Provides personalized recommendations
+- Shows relevant booking links
+- Groups similar resources together in responses
 
 ## Installation
 
-1. **Clone the repository**
+### Prerequisites
 
-   ```
-   git clone https://github.com/rishabhkumar14/GradGear.git
-   cd GradGear
-   ```
+- Node.js 14+ and npm
+- Google AI API key for Gemini
 
-2. **Install dependencies**
+### Backend Setup
 
-   ```
-   npm install
-   ```
+1. Clone the repository:
 
-3. **Start the development server**
-
-   ```
-   npm start
-   ```
-
-4. **Build for production**
-   ```
-   npm run build
-   ```
-
-## Usage
-
-Once the application is running, you'll have access to:
-
-- **Homepage**: Overview dashboard with key metrics and quick access cards
-- **Resources**: Browse all available resources by category
-- **AI Assistant**: Get help finding resources through natural language interaction
-- **About Us**: Learn about the platform and provide feedback
-- **Contribute**: Suggest new resources or improvements
-
-## Project Structure
-
-```
-GradGear/
-├── public/
-│   ├── index.html
-│   └── ...
-├── src/
-│   ├── assets/
-│   │   ├── headers/
-│   │   ├── laptop.png
-│   │   ├── logo.png
-│   │   └── ...
-│   ├── components/
-│   │   └── navbar.js
-│   ├── pages/
-│   │   ├── about/
-│   │   │   └── AboutUs.js
-│   │   ├── assistant/
-│   │   │   └── Assistant.js
-│   │   ├── contribute/
-│   │   │   └── Contribute.js
-│   │   ├── homepage/
-│   │   │   ├── Homepage.js
-│   │   │   └── HomePageTable.js
-│   │   └── resources/
-│   │       ├── Inventory.js
-│   │       ├── Resources.js
-│   │       └── ResourcesData.js
-│   ├── App.js
-│   └── index.js
-└── package.json
+```bash
+git clone https://github.com/yourusername/gradgear.git
+cd gradgear/backend
 ```
 
-## Components
+2. Install dependencies:
 
-### Core Components
+```bash
+npm i
+```
 
-- **Navbar**: Side navigation with collapsible drawer
-- **Resources**: Main resource browsing interface with collapsible categories
-- **AI Assistant**: Interactive chat interface for resource discovery
-- **AboutUsData**: Information, feedback, and contact forms
-- **Homepage**: Dashboard view with metrics and resource access
+3. Create a `.env` file with the following variables:
 
-### Shared UI Components
+```
+NODE_ENV=development
+PORT=3500
+CORS_ORIGIN=http://localhost:3000
+IMAGES_PATH=assets/images
+BASE_URL=http://localhost:3500
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=your_app_password_here
+ADMIN_EMAIL=your_admin_email@gmail.com
+GEMINI_API_KEY=your_gemini_api_key_here
+```
 
-- **Resource Cards**: Display resource information with consistent styling
-- **Category Headers**: Collapsible section headers with icons
-- **Search & Filter**: Resource discovery tools
+4. Start the backend server:
 
-## API Integration
+```bash
+nodemon server.js
+```
 
-The application is designed with placeholders for API integration:
+### Frontend Setup
 
-- Resource data currently uses static data in `ResourcesData.js`
-- AI Assistant uses example responses that can be replaced with actual API calls
-- Form submissions in About/Contact pages log to console but can be connected to backend services
+1. Navigate to the frontend directory:
 
-To integrate with a backend:
+```bash
+cd ../frontend
+```
 
-1. Replace static data sources with API calls
-2. Implement proper authentication
-3. Connect form submissions to appropriate endpoints
+2. Install dependencies:
 
-## Future Enhancements
+```bash
+npm i
+```
 
-- Real-time resource availability tracking
-- User authentication and personalization
-- Resource reservation system
-- Admin dashboard for resource management
-- Enhanced AI capabilities with natural language processing
-- Mobile app version
+3. Create a `.env` file:
 
-## Contributing
+```
+REACT_APP_API_URL=http://localhost:3500/api
+```
 
-Contributions are welcome! Please feel free to submit a Pull Request or open an Issue to suggest improvements or add new features.
+4. Start the frontend development server:
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+```bash
+npm start
+```
 
-## Team
+## AI Chat System
 
-This project was developed by students as part of the Human-Computer Interaction course CS-5340 at Northeastern University.
+The AI chat system uses Google's Generative AI (Gemini) for semantic search and natural language understanding.
 
-## License
+### Key Components
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+1. **Embedding Generation**: Creates vector representations of resources and queries
+2. **Semantic Search**: Finds resources similar to user queries
+3. **Intent Analysis**: Identifies the user's needs from their query
+4. **Response Generation**: Creates helpful, formatted responses
+5. **Resource Linking**: Provides direct booking links
+
+### Working with Resources
+
+The system extracts meaningful information from each resource:
+
+- Name and description
+- Detailed features and use cases
+- Associated tags (chips)
+- Locations and availability
+- Alternative names and synonyms
+
+### Natural Language Processing
+
+The AI system can understand:
+
+- Direct queries ("I need a laptop")
+- Vague requests ("My battery died")
+- Category explorations ("Show me all cameras")
+- Plurals and synonyms ("cams" → "cameras")
+- Problem descriptions ("I need to record audio")
+
+### Key Enhancements
+
+The AI chat system has been enhanced to:
+
+- Handle vague and indirect queries better (e.g., "My laptop died" → suggest chargers)
+- Recognize synonyms and variations (e.g., "cams", "cam", "camera", "cameras")
+- Extract context from enhanced resource details
+- Show all relevant options when asked about a category
+- Provide elegant booking links in responses
+- Group similar resources for better readability
+
+## API Documentation
+
+### Resources API
+
+- `GET /api/resources`: Get all resources
+- `GET /api/resources/:id`: Get a specific resource
+- `GET /api/resources/category/:category`: Get resources by category
+- `POST /api/resources`: Create a resource (admin only)
+- `PUT /api/resources/:id`: Update a resource (admin only)
+- `DELETE /api/resources/:id`: Delete a resource (admin only)
+
+### Chat API
+
+- `POST /api/chat`: Send a message to the AI assistant
+  - Request body: `{ query: "user message here" }`
+  - Response: `{ success: true, response: "AI response", relatedResources: [...] }`
+
+### Auth API
+
+- `POST /api/auth/register`: Register a new user
+- `POST /api/auth/login`: Login an existing user
+- `GET /api/auth/profile`: Get the current user's profile
+
+### Bookings API
+
+- `GET /api/bookings`: Get user's bookings
+- `POST /api/bookings`: Create a new booking
+- `DELETE /api/bookings/:id`: Cancel a booking
+
+## Troubleshooting
+
+### Common Issues
+
+1. **AI Service Not Responding**:
+   - Check API key in environment variables
+   - Verify network connectivity to Google AI API
+   - Check request formatting
+
+2. **Resource Images Not Loading**:
+   - Verify image paths in resource data
+   - Check BASE_URL configuration
+   - Ensure images exist in the correct directory
+
+3. **Chat Not Finding Resources**:
+   - Check console logs for embedding initialization errors
+   - Verify that the .data file is accessible
+   - Try restarting the backend server
+
+4. **Email Notifications Not Sending**:
+   - Verify SMTP settings in .env file
+   - Check console for SMTP connection errors
+   - Ensure the email templates exist
+
+### Logging
+
+The application uses console logging for development purposes. Check your terminal for:
+- Error messages
+- AI chat processing logs
+- Resource initialization logs
 
 ---
 
